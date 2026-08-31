@@ -110,7 +110,7 @@
     setBusy(false);
     resetTurnstile();
 
-    if (code === 'captcha') {
+    if (String(code || '').startsWith('captcha')) {
       showError('No pudimos validar la verificación anti-spam. Esperá unos segundos, completala nuevamente y volvé a enviar.');
       return;
     }
