@@ -7,6 +7,9 @@
 
   if (!form) return;
 
+  // Cloudflare Turnstile is intentionally removed from the active lead flow.
+  document.querySelectorAll('.turnstile-wrap, .cf-turnstile').forEach((node) => node.remove());
+
   const status = document.querySelector('#lead-form-status');
   const submit = form.querySelector('button[type="submit"]');
   const submitLabel = submit.querySelector('[data-submit-label]');
@@ -43,9 +46,7 @@
     const raw = String(value || '').trim();
     if (!raw) return '';
     if (/^[a-z][a-z0-9+.-]*:\/\//i.test(raw)) return raw;
-    if (/^www\./i.test(raw) || /^[^/\s]+\.[^/\s]+(?:\/.*)?$/i.test(raw)) {
-      return `https://${raw}`;
-    }
+    if (/^www\./i.test(raw) || /^[^/\s]+\.[^/\s]+(?:\/.*)?$/i.test(raw)) return `https://${raw}`;
     return raw;
   };
 
@@ -77,14 +78,6 @@
     status.focus();
   };
 
-  const resetTurnstile = () => {
-    try {
-      if (window.turnstile) window.turnstile.reset();
-    } catch (error) {
-      console.warn('Turnstile reset failed', error);
-    }
-  };
-
   const showSubmittedState = () => {
     submitted = true;
     form.classList.add('is-submitted');
@@ -101,27 +94,18 @@
     status.focus();
   };
 
-  const finishWithError = (code) => {
+  const finishWithError = () => {
     pendingRequestId = '';
     if (responseTimer) {
       clearTimeout(responseTimer);
       responseTimer = null;
     }
     setBusy(false);
-    resetTurnstile();
-
-    if (String(code || '').startsWith('captcha')) {
-      showError('No pudimos validar la verificación anti-spam. Esperá unos segundos, completala nuevamente y volvé a enviar.');
-      return;
-    }
-
     showError('No pudimos registrar la solicitud. Probá nuevamente o escribinos a diagnostico@sinecdo.com.');
   };
 
   const makeRequestId = () => {
-    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-      return window.crypto.randomUUID();
-    }
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
     return `req-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   };
 
@@ -142,7 +126,7 @@
       return;
     }
 
-    finishWithError(data.code || 'server');
+    finishWithError();
   });
 
   populateTracking();
@@ -154,14 +138,7 @@
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-
     if (submitted || pendingRequestId || !form.reportValidity()) return;
-
-    const turnstileResponse = form.elements.namedItem('cf-turnstile-response');
-    if (!turnstileResponse || !String(turnstileResponse.value || '').trim()) {
-      showError('Completá la verificación anti-spam antes de enviar la solicitud.');
-      return;
-    }
 
     if (webInput) webInput.value = normalizeUrl(webInput.value);
     if (linkedinInput) linkedinInput.value = normalizeUrl(linkedinInput.value);
@@ -169,13 +146,13 @@
     pendingRequestId = makeRequestId();
     requestInput.value = pendingRequestId;
     setBusy(true);
-    status.textContent = 'Enviando y verificando la solicitud…';
+    status.textContent = 'Enviando solicitud…';
     status.className = 'form-status';
     status.hidden = false;
 
     responseTimer = window.setTimeout(() => {
       if (!pendingRequestId) return;
-      finishWithError('timeout');
+      finishWithError();
     }, RESPONSE_TIMEOUT_MS);
 
     HTMLFormElement.prototype.submit.call(form);
