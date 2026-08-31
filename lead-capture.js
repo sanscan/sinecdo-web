@@ -93,8 +93,8 @@
     });
     status.innerHTML = `
       <span class="form-status-kicker">Solicitud recibida</span>
-      <strong>Ya recibimos tu mensaje.</strong>
-      <span>Vamos a revisar tu solicitud y te responderemos por email o WhatsApp.</span>
+      <strong>Gracias. Ya tenemos tu solicitud.</strong>
+      <span>Vamos a revisarla y te vamos a responder por email o WhatsApp para contarte el próximo paso.</span>
     `;
     status.className = 'form-status success';
     status.hidden = false;
