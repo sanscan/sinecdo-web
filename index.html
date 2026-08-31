@@ -18,6 +18,8 @@
   <meta name="twitter:description" content="Ayudamos a empresas con valor real pero comunicación desalineada a ordenar cómo se ven, cómo se explican y cómo venden.">
   <title>Sinecdo — Consultora creativa y comercial</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="form.css">
+  <script src="lead-capture.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -27,7 +29,7 @@
         <a href="#problema">Problema</a>
         <a href="#metodo">Método</a>
         <a href="#fit">Fit</a>
-        <a class="button small" href="#diagnostico">Solicitar Sesión</a>
+        <a class="button small" href="#solicitud">Solicitar Sesión</a>
       </nav>
     </div>
   </header>
@@ -39,7 +41,7 @@
         <h1 id="hero-title">Tu empresa puede valer más de lo que está comunicando.</h1>
         <p>Sinecdo alinea identidad, comunicación y venta para que el mercado entienda mejor el valor que ya existe.</p>
         <div class="hero-actions">
-          <a class="button" href="#diagnostico">Solicitar Sesión de Diagnóstico <span aria-hidden="true">↗</span></a>
+          <a class="button" href="#solicitud">Solicitar Sesión de Diagnóstico <span aria-hidden="true">↗</span></a>
           <a class="button secondary" href="#metodo">Ver cómo trabajamos</a>
         </div>
         <p class="microcopy">Solicitud previa · revisión de materiales · 30 min online</p>
@@ -163,7 +165,7 @@
           <h2>Sesión de Diagnóstico Gratuita.</h2>
           <p>Una conversación online de 30 minutos, con solicitud previa y revisión de materiales, para entender si existe una desalineación concreta y si Sinecdo puede aportar criterio real.</p>
           <a class="button" href="#solicitud">Solicitar Sesión de Diagnóstico <span aria-hidden="true">↓</span></a>
-          <p class="microcopy">El formulario de solicitud se conecta en el siguiente gate del sprint.</p>
+          <p class="microcopy">Solicitud breve · revisamos cada caso antes de abrir agenda.</p>
         </article>
         <aside class="next-step">
           <span class="tag">Si hay fit / siguiente paso</span>
@@ -195,12 +197,87 @@
       </div>
     </section>
 
-    <section class="wrap final-cta" id="solicitud">
-      <p class="eyebrow" style="justify-content:center">Diagnóstico antes que ejecución</p>
-      <h2>¿Tu empresa vale más de lo que comunica?</h2>
-      <p>Primero entendemos qué está desalineado. Si aparece una oportunidad concreta, definimos juntos qué tiene sentido ordenar después.</p>
-      <a class="button" href="#diagnostico">Solicitar Sesión de Diagnóstico</a>
-      <p class="microcopy">Formulario en implementación · todavía no se considera CTA operativo.</p>
+    <section class="lead-capture-section" id="solicitud" aria-labelledby="solicitud-title">
+      <div class="wrap lead-capture-grid">
+        <div class="lead-capture-copy">
+          <p class="eyebrow">Solicitud de diagnóstico</p>
+          <h2 id="solicitud-title">Contanos qué está pasando.</h2>
+          <p>Con unos pocos datos podemos entender el contexto y decidir si una Sesión de Diagnóstico es el siguiente paso correcto.</p>
+          <div class="lead-capture-points">
+            <div class="lead-capture-point"><strong>1 · Recibimos tu solicitud</strong>La información queda registrada para revisión.</div>
+            <div class="lead-capture-point"><strong>2 · Revisamos fit</strong>No abrimos agenda automáticamente ni hacemos auditorías completas por formulario.</div>
+            <div class="lead-capture-point"><strong>3 · Te respondemos</strong>Si hay una oportunidad concreta, coordinamos la conversación.</div>
+          </div>
+        </div>
+
+        <div class="lead-form-shell">
+          <form class="lead-form" id="lead-form" novalidate>
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="nombre">Nombre y apellido *</label>
+                <input id="nombre" name="nombre" type="text" autocomplete="name" required maxlength="120">
+              </div>
+              <div class="form-field">
+                <label for="empresa">Empresa / marca *</label>
+                <input id="empresa" name="empresa" type="text" autocomplete="organization" required maxlength="160">
+              </div>
+              <div class="form-field">
+                <label for="rubro">Rubro / industria *</label>
+                <input id="rubro" name="rubro" type="text" required maxlength="120" placeholder="Ej. servicios B2B, software, arquitectura">
+              </div>
+              <div class="form-field">
+                <label for="rol">Rol / cargo *</label>
+                <input id="rol" name="rol" type="text" autocomplete="organization-title" required maxlength="120">
+              </div>
+              <div class="form-field">
+                <label for="email">Email *</label>
+                <input id="email" name="email" type="email" autocomplete="email" required maxlength="180">
+              </div>
+              <div class="form-field">
+                <label for="whatsapp">WhatsApp *</label>
+                <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" required maxlength="80" placeholder="Con código de país">
+              </div>
+              <div class="form-field">
+                <label for="web">Web <span class="optional">(opcional)</span></label>
+                <input id="web" name="web" type="url" inputmode="url" maxlength="300" placeholder="https://">
+              </div>
+              <div class="form-field">
+                <label for="linkedin">LinkedIn <span class="optional">(opcional)</span></label>
+                <input id="linkedin" name="linkedin" type="url" inputmode="url" maxlength="300" placeholder="https://linkedin.com/…">
+              </div>
+              <div class="form-field full">
+                <label for="problema">¿Qué te gustaría resolver? *</label>
+                <textarea id="problema" name="problema" required maxlength="2000" placeholder="Contanos brevemente qué sentís que hoy no está alineado, claro o funcionando como debería."></textarea>
+              </div>
+            </div>
+
+            <div class="honeypot" aria-hidden="true">
+              <label for="website_check">No completar</label>
+              <input id="website_check" name="website_check" type="text" tabindex="-1" autocomplete="off">
+            </div>
+
+            <input type="hidden" name="origen" value="Web">
+            <input type="hidden" name="campania" value="">
+            <input type="hidden" name="utm_source" value="">
+            <input type="hidden" name="utm_medium" value="">
+            <input type="hidden" name="utm_campaign" value="">
+            <input type="hidden" name="utm_content" value="">
+            <input type="hidden" name="page_url" value="">
+
+            <label class="form-consent" for="consentimiento">
+              <input id="consentimiento" name="consentimiento" type="checkbox" value="si" required>
+              <span>Acepto que Sinecdo use estos datos para revisar y responder esta solicitud.</span>
+            </label>
+
+            <div class="form-actions">
+              <button class="button" type="submit"><span data-submit-label>Enviar solicitud</span> <span aria-hidden="true">↗</span></button>
+              <p class="form-note">No abre agenda automáticamente. Primero revisamos el caso.</p>
+            </div>
+
+            <p class="form-status" id="lead-form-status" role="status" tabindex="-1" hidden></p>
+          </form>
+        </div>
+      </div>
     </section>
   </main>
 
