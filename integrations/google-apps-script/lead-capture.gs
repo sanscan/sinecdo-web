@@ -2,8 +2,6 @@ const SPREADSHEET_ID = '1G3h35WQv7IM0IjOAz7WTQYo_3kocd8GwqNzYBru9Gv4';
 const SHEET_NAME = 'Leads';
 const NOTIFY_TO = 'diagnostico@sinecdo.com';
 const TIMEZONE = 'America/Argentina/Buenos_Aires';
-const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-const ALLOWED_HOSTNAMES = ['sinecdo.com', 'www.sinecdo.com'];
 const RESPONSE_SOURCE = 'sinecdo-lead';
 
 function doGet() {
@@ -33,10 +31,6 @@ function doPost(e) {
     const problema = clean_(p.problema);
     const consentimiento = clean_(p.consentimiento);
 
-    // Turnstile tokens may be up to 2048 characters. Never pass them through clean_(),
-    // which intentionally truncates ordinary CRM text fields to 2000 characters.
-    const turnstileToken = String(p['cf-turnstile-response'] || '').trim();
-
     if (!requestId || !nombre || !empresa || !rol || !rubro || !email || !whatsapp || !web || !problema || consentimiento !== 'si') {
       throw new Error('Faltan campos obligatorios o consentimiento.');
     }
@@ -44,8 +38,6 @@ function doPost(e) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       throw new Error('Email inválido.');
     }
-
-    verifyTurnstile_(turnstileToken);
 
     const now = new Date();
     const leadId = 'LEAD-' + Utilities.formatDate(now, TIMEZONE, 'yyyyMMdd-HHmmss') + '-' + Math.floor(100 + Math.random() * 900);
@@ -90,12 +82,7 @@ function doPost(e) {
     return respond_(true, requestId, 'ok');
   } catch (err) {
     console.error(err && err.stack ? err.stack : err);
-    const message = String(err && err.message ? err.message : err || '');
-    let code = 'server';
-    if (/invalid-input-secret/i.test(message)) code = 'captcha-secret';
-    else if (/invalid-input-response|timeout-or-duplicate/i.test(message)) code = 'captcha-token';
-    else if (/Turnstile|anti-spam|TURNSTILE_SECRET_KEY|Hostname/i.test(message)) code = 'captcha';
-    return respond_(false, requestId, code);
+    return respond_(false, requestId, 'server');
   }
 }
 
@@ -109,45 +96,11 @@ function respond_(ok, requestId, code) {
 
   const json = JSON.stringify(payload).replace(/</g, '\\u003c');
   const html = '<!doctype html><html><head><meta charset="utf-8"></head><body>' +
-    '<script>window.parent.postMessage(' + json + ', "*");</script>' +
+    '<script>window.parent.postMessage(' + json + ', "*");<\/script>' +
     '</body></html>';
 
   return HtmlService.createHtmlOutput(html)
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-}
-
-function verifyTurnstile_(token) {
-  if (!token) throw new Error('Falta verificación anti-spam.');
-  if (token.length > 2048) throw new Error('Turnstile token demasiado largo.');
-
-  const secret = PropertiesService.getScriptProperties().getProperty('TURNSTILE_SECRET_KEY');
-  if (!secret) throw new Error('TURNSTILE_SECRET_KEY no está configurada.');
-
-  const response = UrlFetchApp.fetch(TURNSTILE_VERIFY_URL, {
-    method: 'post',
-    payload: {
-      secret: secret,
-      response: token
-    },
-    muteHttpExceptions: true
-  });
-
-  const status = response.getResponseCode();
-  let result = {};
-  try {
-    result = JSON.parse(response.getContentText() || '{}');
-  } catch (parseError) {
-    throw new Error('Respuesta inválida de Turnstile.');
-  }
-
-  if (status !== 200 || result.success !== true) {
-    const codes = Array.isArray(result['error-codes']) ? result['error-codes'].join(',') : 'unknown';
-    throw new Error('Turnstile rechazó la solicitud: ' + codes);
-  }
-
-  if (result.hostname && ALLOWED_HOSTNAMES.indexOf(String(result.hostname).toLowerCase()) === -1) {
-    throw new Error('Hostname de Turnstile no autorizado: ' + result.hostname);
-  }
 }
 
 function notify_(leadId, row) {
