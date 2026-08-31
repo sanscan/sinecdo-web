@@ -4,45 +4,201 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Sinecdo — Deployment Test</title>
-  <style>
-    :root { color-scheme: dark; }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background: #171918;
-      color: #f3f1eb;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    main {
-      width: min(760px, 100%);
-      border: 1px solid rgba(243,241,235,.16);
-      border-radius: 20px;
-      padding: clamp(28px, 6vw, 64px);
-      background: rgba(255,255,255,.025);
-    }
-    .signal {
-      width: 12px;
-      height: 12px;
-      border-radius: 999px;
-      background: #63e6d2;
-      box-shadow: 0 0 28px rgba(99,230,210,.7);
-      margin-bottom: 28px;
-    }
-    h1 { margin: 0 0 16px; font-size: clamp(40px, 8vw, 80px); letter-spacing: -.06em; }
-    p { margin: 0; max-width: 55ch; font-size: clamp(16px, 2vw, 20px); line-height: 1.55; color: rgba(243,241,235,.72); }
-    strong { color: #63e6d2; font-weight: 600; }
-  </style>
+  <meta name="description" content="Sinecdo es una consultora creativa y comercial que ayuda a empresas con valor real pero comunicación desalineada a ordenar cómo se ven, cómo se explican y cómo venden.">
+  <meta name="theme-color" content="#121514">
+  <title>Sinecdo — Consultora creativa y comercial</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main>
-    <div class="signal" aria-hidden="true"></div>
-    <h1>sinecdo</h1>
-    <p><strong>Deploy OK.</strong> GitHub está listo. Esta página es únicamente una prueba técnica previa a la Landing MVP Conference Ready.</p>
+  <header class="site-header">
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="Sinecdo, inicio">sinecdo</a>
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a href="#problema">Problema</a>
+        <a href="#metodo">Método</a>
+        <a href="#fit">Fit</a>
+        <a class="button small" href="#diagnostico">Solicitar Sesión</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="wrap hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Consultora creativa y comercial</p>
+        <h1 id="hero-title">Tu empresa puede valer más de lo que está comunicando.</h1>
+        <p>Sinecdo alinea identidad, comunicación y venta para que el mercado entienda mejor el valor que ya existe.</p>
+        <div class="hero-actions">
+          <a class="button" href="#diagnostico">Solicitar Sesión de Diagnóstico <span aria-hidden="true">↗</span></a>
+          <a class="button secondary" href="#metodo">Ver cómo trabajamos</a>
+        </div>
+        <p class="microcopy">Solicitud previa · revisión de materiales · 30 min online</p>
+      </div>
+
+      <div class="signal-panel" aria-label="Modelo de alineación de Sinecdo">
+        <span class="signal-label">signal map / 01</span>
+        <svg class="signal-map" viewBox="0 0 520 520" role="img" aria-labelledby="map-title map-desc">
+          <title id="map-title">Valor real, identidad, comunicación, percepción y venta</title>
+          <desc id="map-desc">Una red visual conecta los cinco componentes del modelo de alineación de Sinecdo.</desc>
+          <circle class="ring" cx="260" cy="260" r="156"/>
+          <circle class="ring" cx="260" cy="260" r="112"/>
+          <line class="line active" x1="130" y1="150" x2="240" y2="210"/>
+          <line class="line active" x1="240" y1="210" x2="350" y2="150"/>
+          <line class="line" x1="240" y1="210" x2="200" y2="340"/>
+          <line class="line active" x1="200" y1="340" x2="355" y2="355"/>
+          <line class="line" x1="350" y1="150" x2="355" y2="355"/>
+          <circle class="node active" cx="130" cy="150" r="9"/>
+          <circle class="node" cx="240" cy="210" r="9"/>
+          <circle class="node" cx="350" cy="150" r="9"/>
+          <circle class="node" cx="200" cy="340" r="9"/>
+          <circle class="node active" cx="355" cy="355" r="9"/>
+          <text class="active-text" x="92" y="128">Valor real</text>
+          <text x="210" y="188">Identidad</text>
+          <text x="327" y="128">Comunicación</text>
+          <text x="163" y="372">Percepción</text>
+          <text class="active-text" x="337" y="387">Venta</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="section" id="problema">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">01 / Desalineación</p>
+            <h2 class="section-title">Muchas empresas no tienen un problema de diseño. Tienen un problema de alineación.</h2>
+          </div>
+          <p class="section-lead">Podés tener una buena oferta, experiencia y clientes, pero si tu identidad, tu mensaje y tus activos comerciales cuentan historias distintas, el mercado termina entendiendo menos de lo que realmente valés.</p>
+        </div>
+
+        <div class="symptom-grid">
+          <article class="card"><div class="icon">🔎</div><p><strong>Tu empresa se ve más chica o genérica</strong> de lo que realmente es.</p></article>
+          <article class="card"><div class="icon">💬</div><p><strong>La propuesta necesita demasiada explicación</strong> para entenderse.</p></article>
+          <article class="card"><div class="icon">🧩</div><p><strong>Web, LinkedIn, PDF y discurso comercial</strong> no parecen parte del mismo sistema.</p></article>
+          <article class="card"><div class="icon">📉</div><p><strong>Competís por precio</strong> aunque el problema real sea percepción de valor.</p></article>
+          <article class="card"><div class="icon">👤</div><p><strong>El fundador sigue siendo imprescindible</strong> para explicar y vender la oferta.</p></article>
+          <article class="card"><div class="icon">🎨</div><p><strong>Se producen piezas nuevas</strong> sin una arquitectura previa.</p></article>
+        </div>
+
+        <div class="alignment-strip" aria-label="Cadena de alineación">
+          <div class="alignment-item"><span>01</span><strong>Valor real</strong></div>
+          <div class="alignment-item"><span>02</span><strong>Identidad</strong></div>
+          <div class="alignment-item"><span>03</span><strong>Comunicación</strong></div>
+          <div class="alignment-item"><span>04</span><strong>Percepción</strong></div>
+          <div class="alignment-item"><span>05</span><strong>Venta</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="metodo">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">02 / Método</p>
+            <h2 class="section-title">Primero entendemos qué está desalineado. Después decidimos qué vale la pena construir.</h2>
+          </div>
+          <p class="section-lead">Sinecdo no empieza preguntando qué pieza necesitás. Empieza leyendo el sistema, separando síntomas de causas y ordenando prioridades.</p>
+        </div>
+
+        <div class="method-grid">
+          <article class="card method-card"><span class="num">01 — 🔎</span><h3>Observar</h3><p>Miramos el contexto, la oferta y los activos actuales. Detectamos señales visibles de desalineación.</p></article>
+          <article class="card method-card"><span class="num">02 — 🧠</span><h3>Diagnosticar</h3><p>Interpretamos qué está debilitando claridad, percepción o capacidad comercial. Separamos síntomas de causas.</p></article>
+          <article class="card method-card"><span class="num">03 — 🧩</span><h3>Alinear</h3><p>Ordenamos prioridades entre identidad, mensaje, propuesta y activos para que el sistema comunique una misma idea de valor.</p></article>
+          <article class="card method-card"><span class="num">04 — ⚡</span><h3>Activar</h3><p>Definimos el siguiente paso concreto según el problema: claridad inicial, diagnóstico, arquitectura o implementación.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="fit">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">03 / Fit</p>
+            <h2 class="section-title">Sinecdo funciona mejor cuando ya hay algo valioso para ordenar.</h2>
+          </div>
+          <p class="section-lead">No buscamos llenar agenda. Buscamos conversaciones donde podamos aportar criterio real.</p>
+        </div>
+
+        <div class="fit-grid">
+          <div class="fit-column good">
+            <h3>Buen fit</h3>
+            <ul class="clean-list">
+              <li><b>+</b><span>Empresa, estudio, consultora o profesional especializado con oferta activa.</span></li>
+              <li><b>+</b><span>Existe tracción, clientes, experiencia o casos reales.</span></li>
+              <li><b>+</b><span>Hay materiales actuales para revisar.</span></li>
+              <li><b>+</b><span>Existe un problema de claridad, percepción, posicionamiento o venta.</span></li>
+              <li><b>+</b><span>Participa una persona con capacidad de decisión.</span></li>
+              <li><b>+</b><span>Hay disposición a invertir si aparece una oportunidad concreta.</span></li>
+            </ul>
+          </div>
+          <div class="fit-column">
+            <h3>No es prioridad</h3>
+            <ul class="clean-list">
+              <li><b>×</b><span>Ideas en etapa cero sin oferta validada.</span></li>
+              <li><b>×</b><span>Búsqueda exclusiva de un logo, flyer o posteo aislado.</span></li>
+              <li><b>×</b><span>Necesidad de “hacer marketing” sin revisar propuesta ni mensaje.</span></li>
+              <li><b>×</b><span>Comparación basada únicamente en precio.</span></li>
+              <li><b>×</b><span>Falta de materiales o contexto para diagnosticar.</span></li>
+              <li><b>×</b><span>Expectativa de recibir una auditoría completa gratis.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="diagnostico">
+      <div class="wrap diagnostic-shell">
+        <article class="diagnostic-main">
+          <p class="eyebrow">Primer paso</p>
+          <h2>Sesión de Diagnóstico Gratuita.</h2>
+          <p>Una conversación online de 30 minutos, con solicitud previa y revisión de materiales, para entender si existe una desalineación concreta y si Sinecdo puede aportar criterio real.</p>
+          <a class="button" href="#solicitud">Solicitar Sesión de Diagnóstico <span aria-hidden="true">↓</span></a>
+          <p class="microcopy">El formulario de solicitud se conecta en el siguiente gate del sprint.</p>
+        </article>
+        <aside class="next-step">
+          <span class="tag">Si hay fit / siguiente paso</span>
+          <h3>Mapa Inicial de Alineación</h3>
+          <p>Una lectura estratégica breve y accionable para detectar la desalineación principal y definir qué conviene ordenar primero antes de invertir en nuevas piezas o implementación.</p>
+          <strong class="price">USD 250 · entrega en 3 días hábiles</strong>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap trust-grid">
+        <div>
+          <p class="eyebrow">04 / Confianza</p>
+          <h2 class="quote-title">Criterio senior, trabajo directo y sistemas que se pueden usar.</h2>
+        </div>
+        <div class="trust-copy">
+          <p>Sinecdo combina dirección estratégica, diseño, comunicación y mirada comercial para detectar qué está debilitando la percepción de valor y ordenar qué conviene resolver primero.</p>
+          <p>No trabajamos desde un catálogo de piezas. Trabajamos desde el problema, el contexto y la decisión que el negocio necesita destrabar.</p>
+          <div class="trust-signals">
+            <div class="trust-signal"><span>🧠</span> Dirección y criterio senior.</div>
+            <div class="trust-signal"><span>🎯</span> Recomendaciones priorizadas.</div>
+            <div class="trust-signal"><span>🧩</span> Estrategia y ejecución conectadas.</div>
+            <div class="trust-signal"><span>💬</span> Comunicación clara, sin humo.</div>
+            <div class="trust-signal"><span>📐</span> Sistemas documentados.</div>
+            <div class="trust-signal"><span>🤝</span> Trabajo cercano con decisores.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap final-cta" id="solicitud">
+      <p class="eyebrow" style="justify-content:center">Diagnóstico antes que ejecución</p>
+      <h2>¿Tu empresa vale más de lo que comunica?</h2>
+      <p>Primero entendemos qué está desalineado. Si aparece una oportunidad concreta, definimos juntos qué tiene sentido ordenar después.</p>
+      <a class="button" href="#diagnostico">Solicitar Sesión de Diagnóstico</a>
+      <p class="microcopy">Formulario en implementación · todavía no se considera CTA operativo.</p>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-row">
+      <strong>sinecdo</strong>
+      <span>Consultora creativa y comercial · Conference Ready 2026</span>
+    </div>
+  </footer>
 </body>
 </html>
