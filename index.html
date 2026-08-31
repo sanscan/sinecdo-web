@@ -238,12 +238,12 @@
                 <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" required maxlength="80" placeholder="Con código de país">
               </div>
               <div class="form-field">
-                <label for="web">Web <span class="optional">(opcional)</span></label>
-                <input id="web" name="web" type="url" inputmode="url" maxlength="300" placeholder="https://">
+                <label for="web">Web *</label>
+                <input id="web" name="web" type="text" inputmode="url" required maxlength="300" placeholder="www.empresa.com">
               </div>
               <div class="form-field">
                 <label for="linkedin">LinkedIn <span class="optional">(opcional)</span></label>
-                <input id="linkedin" name="linkedin" type="url" inputmode="url" maxlength="300" placeholder="https://linkedin.com/…">
+                <input id="linkedin" name="linkedin" type="text" inputmode="url" maxlength="300" placeholder="linkedin.com/in/usuario">
               </div>
               <div class="form-field full">
                 <label for="problema">¿Qué te gustaría resolver? *</label>
@@ -274,7 +274,7 @@
               <p class="form-note">No abre agenda automáticamente. Primero revisamos el caso.</p>
             </div>
 
-            <p class="form-status" id="lead-form-status" role="status" tabindex="-1" hidden></p>
+            <div class="form-status" id="lead-form-status" role="status" tabindex="-1" hidden></div>
           </form>
         </div>
       </div>
