@@ -7,9 +7,6 @@
 
   if (!form) return;
 
-  // Cloudflare Turnstile is intentionally removed from the active lead flow.
-  document.querySelectorAll('.turnstile-wrap, .cf-turnstile').forEach((node) => node.remove());
-
   const status = document.querySelector('#lead-form-status');
   const submit = form.querySelector('button[type="submit"]');
   const submitLabel = submit.querySelector('[data-submit-label]');
@@ -86,8 +83,8 @@
     });
     status.innerHTML = `
       <span class="form-status-kicker">Solicitud recibida</span>
-      <strong>Gracias. Ya tenemos tu solicitud.</strong>
-      <span>Vamos a revisarla y te vamos a responder por email o WhatsApp para contarte el próximo paso.</span>
+      <strong>Gracias. Recibimos tu solicitud.</strong>
+      <span>La vamos a revisar y te responderemos por email o WhatsApp con el próximo paso.</span>
     `;
     status.className = 'form-status success';
     status.hidden = false;
