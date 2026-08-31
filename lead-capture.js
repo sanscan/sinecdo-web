@@ -8,10 +8,38 @@
   const submit = form.querySelector('button[type="submit"]');
   const submitLabel = submit.querySelector('[data-submit-label]');
   const params = new URLSearchParams(window.location.search);
+  const webInput = form.elements.namedItem('web');
+  const linkedinInput = form.elements.namedItem('linkedin');
+
+  // Accept domains without protocol. Web is required for this short diagnostic request.
+  if (webInput) {
+    webInput.type = 'text';
+    webInput.inputMode = 'url';
+    webInput.required = true;
+    webInput.placeholder = 'www.empresa.com';
+    const webLabel = form.querySelector('label[for="web"]');
+    if (webLabel) webLabel.textContent = 'Web *';
+  }
+
+  if (linkedinInput) {
+    linkedinInput.type = 'text';
+    linkedinInput.inputMode = 'url';
+    linkedinInput.placeholder = 'linkedin.com/in/usuario';
+  }
 
   const setHidden = (name, value) => {
     const input = form.elements.namedItem(name);
     if (input) input.value = value || '';
+  };
+
+  const normalizeUrl = (value) => {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^[a-z][a-z0-9+.-]*:\/\//i.test(raw)) return raw;
+    if (/^www\./i.test(raw) || /^[^/\s]+\.[^/\s]+(?:\/.*)?$/i.test(raw)) {
+      return `https://${raw}`;
+    }
+    return raw;
   };
 
   setHidden('utm_source', params.get('utm_source'));
@@ -26,6 +54,9 @@
     event.preventDefault();
 
     if (!form.reportValidity()) return;
+
+    if (webInput) webInput.value = normalizeUrl(webInput.value);
+    if (linkedinInput) linkedinInput.value = normalizeUrl(linkedinInput.value);
 
     const data = new FormData(form);
     const body = new URLSearchParams();
