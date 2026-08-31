@@ -32,7 +32,10 @@ function doPost(e) {
     const web = clean_(p.web);
     const problema = clean_(p.problema);
     const consentimiento = clean_(p.consentimiento);
-    const turnstileToken = clean_(p['cf-turnstile-response']);
+
+    // Turnstile tokens may be up to 2048 characters. Never pass them through clean_(),
+    // which intentionally truncates ordinary CRM text fields to 2000 characters.
+    const turnstileToken = String(p['cf-turnstile-response'] || '').trim();
 
     if (!requestId || !nombre || !empresa || !rol || !rubro || !email || !whatsapp || !web || !problema || consentimiento !== 'si') {
       throw new Error('Faltan campos obligatorios o consentimiento.');
@@ -88,7 +91,10 @@ function doPost(e) {
   } catch (err) {
     console.error(err && err.stack ? err.stack : err);
     const message = String(err && err.message ? err.message : err || '');
-    const code = /Turnstile|anti-spam|TURNSTILE_SECRET_KEY|Hostname/i.test(message) ? 'captcha' : 'server';
+    let code = 'server';
+    if (/invalid-input-secret/i.test(message)) code = 'captcha-secret';
+    else if (/invalid-input-response|timeout-or-duplicate/i.test(message)) code = 'captcha-token';
+    else if (/Turnstile|anti-spam|TURNSTILE_SECRET_KEY|Hostname/i.test(message)) code = 'captcha';
     return respond_(false, requestId, code);
   }
 }
@@ -112,6 +118,7 @@ function respond_(ok, requestId, code) {
 
 function verifyTurnstile_(token) {
   if (!token) throw new Error('Falta verificación anti-spam.');
+  if (token.length > 2048) throw new Error('Turnstile token demasiado largo.');
 
   const secret = PropertiesService.getScriptProperties().getProperty('TURNSTILE_SECRET_KEY');
   if (!secret) throw new Error('TURNSTILE_SECRET_KEY no está configurada.');
