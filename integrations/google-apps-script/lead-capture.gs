@@ -4,18 +4,23 @@ const NOTIFY_TO = 'diagnostico@sinecdo.com';
 const TIMEZONE = 'America/Argentina/Buenos_Aires';
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const ALLOWED_HOSTNAMES = ['sinecdo.com', 'www.sinecdo.com'];
+const RESPONSE_SOURCE = 'sinecdo-lead';
 
 function doGet() {
   return ContentService.createTextOutput('Sinecdo lead capture endpoint OK');
 }
 
 function doPost(e) {
-  try {
-    const p = (e && e.parameter) || {};
+  let p = {};
+  let requestId = '';
 
-    // Honeypot: bots often fill hidden fields. Return success silently without storing anything.
+  try {
+    p = (e && e.parameter) || {};
+    requestId = clean_(p.request_id);
+
+    // Honeypot: bots often fill hidden fields. Pretend success without storing anything.
     if (String(p.website_check || '').trim()) {
-      return ContentService.createTextOutput('ok');
+      return respond_(true, requestId, 'ok');
     }
 
     const nombre = clean_(p.nombre);
@@ -29,7 +34,7 @@ function doPost(e) {
     const consentimiento = clean_(p.consentimiento);
     const turnstileToken = clean_(p['cf-turnstile-response']);
 
-    if (!nombre || !empresa || !rol || !rubro || !email || !whatsapp || !web || !problema || consentimiento !== 'si') {
+    if (!requestId || !nombre || !empresa || !rol || !rubro || !email || !whatsapp || !web || !problema || consentimiento !== 'si') {
       throw new Error('Faltan campos obligatorios o consentimiento.');
     }
 
@@ -46,31 +51,31 @@ function doPost(e) {
     const notes = buildNotes_(p);
 
     const row = [
-      leadId,                              // A ID
-      now,                                 // B Fecha ingreso
-      source,                              // C Origen
-      campaign,                            // D Evento / campaña
-      nombre,                              // E Nombre y apellido
-      empresa,                             // F Empresa / marca
-      rol,                                 // G Rol / cargo
-      rubro,                               // H Rubro / vertical
-      email,                               // I Email
-      whatsapp,                            // J WhatsApp
-      clean_(p.pais),                      // K País
-      web,                                 // L Web
-      clean_(p.linkedin),                  // M LinkedIn
-      '',                                  // N Qué vende
-      problema,                            // O Problema / señal
-      '',                                  // P Objetivo 3–6 meses
-      '',                                  // Q Autoridad
-      '',                                  // R Disposición a invertir
-      '',                                  // S Fit
-      'Contacto obtenido',                 // T Estado
-      'Revisar fit',                       // U Próximo paso
-      '',                                  // V Fecha seguimiento
-      'Solicitar diagnóstico',             // W Motivo de contacto
-      'Sí',                                // X Consentimiento
-      notes                                // Y Notas
+      leadId,
+      now,
+      source,
+      campaign,
+      nombre,
+      empresa,
+      rol,
+      rubro,
+      email,
+      whatsapp,
+      clean_(p.pais),
+      web,
+      clean_(p.linkedin),
+      '',
+      problema,
+      '',
+      '',
+      '',
+      '',
+      'Contacto obtenido',
+      'Revisar fit',
+      '',
+      'Solicitar diagnóstico',
+      'Sí',
+      notes
     ];
 
     const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
@@ -79,11 +84,30 @@ function doPost(e) {
 
     notify_(leadId, row);
 
-    return ContentService.createTextOutput('ok');
+    return respond_(true, requestId, 'ok');
   } catch (err) {
-    console.error(err);
-    return ContentService.createTextOutput('error');
+    console.error(err && err.stack ? err.stack : err);
+    const message = String(err && err.message ? err.message : err || '');
+    const code = /Turnstile|anti-spam|TURNSTILE_SECRET_KEY|Hostname/i.test(message) ? 'captcha' : 'server';
+    return respond_(false, requestId, code);
   }
+}
+
+function respond_(ok, requestId, code) {
+  const payload = {
+    source: RESPONSE_SOURCE,
+    ok: Boolean(ok),
+    requestId: clean_(requestId),
+    code: clean_(code)
+  };
+
+  const json = JSON.stringify(payload).replace(/</g, '\\u003c');
+  const html = '<!doctype html><html><head><meta charset="utf-8"></head><body>' +
+    '<script>window.parent.postMessage(' + json + ', "*");</script>' +
+    '</body></html>';
+
+  return HtmlService.createHtmlOutput(html)
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function verifyTurnstile_(token) {
@@ -115,7 +139,7 @@ function verifyTurnstile_(token) {
   }
 
   if (result.hostname && ALLOWED_HOSTNAMES.indexOf(String(result.hostname).toLowerCase()) === -1) {
-    throw new Error('Hostname de Turnstile no autorizado.');
+    throw new Error('Hostname de Turnstile no autorizado: ' + result.hostname);
   }
 }
 
