@@ -2,6 +2,8 @@ const SPREADSHEET_ID = '1G3h35WQv7IM0IjOAz7WTQYo_3kocd8GwqNzYBru9Gv4';
 const SHEET_NAME = 'Leads';
 const NOTIFY_TO = 'diagnostico@sinecdo.com';
 const TIMEZONE = 'America/Argentina/Buenos_Aires';
+const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+const ALLOWED_HOSTNAMES = ['sinecdo.com', 'www.sinecdo.com'];
 
 function doGet() {
   return ContentService.createTextOutput('Sinecdo lead capture endpoint OK');
@@ -11,24 +13,31 @@ function doPost(e) {
   try {
     const p = (e && e.parameter) || {};
 
-    // Honeypot: bots often fill hidden fields. Return success silently.
+    // Honeypot: bots often fill hidden fields. Return success silently without storing anything.
     if (String(p.website_check || '').trim()) {
       return ContentService.createTextOutput('ok');
     }
 
     const nombre = clean_(p.nombre);
     const empresa = clean_(p.empresa);
+    const rol = clean_(p.rol);
+    const rubro = clean_(p.rubro);
     const email = clean_(p.email).toLowerCase();
+    const whatsapp = clean_(p.whatsapp);
+    const web = clean_(p.web);
     const problema = clean_(p.problema);
     const consentimiento = clean_(p.consentimiento);
+    const turnstileToken = clean_(p['cf-turnstile-response']);
 
-    if (!nombre || !empresa || !email || !problema || consentimiento !== 'si') {
+    if (!nombre || !empresa || !rol || !rubro || !email || !whatsapp || !web || !problema || consentimiento !== 'si') {
       throw new Error('Faltan campos obligatorios o consentimiento.');
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       throw new Error('Email inválido.');
     }
+
+    verifyTurnstile_(turnstileToken);
 
     const now = new Date();
     const leadId = 'LEAD-' + Utilities.formatDate(now, TIMEZONE, 'yyyyMMdd-HHmmss') + '-' + Math.floor(100 + Math.random() * 900);
@@ -43,12 +52,12 @@ function doPost(e) {
       campaign,                            // D Evento / campaña
       nombre,                              // E Nombre y apellido
       empresa,                             // F Empresa / marca
-      clean_(p.rol),                       // G Rol / cargo
-      clean_(p.rubro),                     // H Rubro / vertical
+      rol,                                 // G Rol / cargo
+      rubro,                               // H Rubro / vertical
       email,                               // I Email
-      clean_(p.whatsapp),                  // J WhatsApp
+      whatsapp,                            // J WhatsApp
       clean_(p.pais),                      // K País
-      clean_(p.web),                       // L Web
+      web,                                 // L Web
       clean_(p.linkedin),                  // M LinkedIn
       '',                                  // N Qué vende
       problema,                            // O Problema / señal
@@ -74,6 +83,39 @@ function doPost(e) {
   } catch (err) {
     console.error(err);
     return ContentService.createTextOutput('error');
+  }
+}
+
+function verifyTurnstile_(token) {
+  if (!token) throw new Error('Falta verificación anti-spam.');
+
+  const secret = PropertiesService.getScriptProperties().getProperty('TURNSTILE_SECRET_KEY');
+  if (!secret) throw new Error('TURNSTILE_SECRET_KEY no está configurada.');
+
+  const response = UrlFetchApp.fetch(TURNSTILE_VERIFY_URL, {
+    method: 'post',
+    payload: {
+      secret: secret,
+      response: token
+    },
+    muteHttpExceptions: true
+  });
+
+  const status = response.getResponseCode();
+  let result = {};
+  try {
+    result = JSON.parse(response.getContentText() || '{}');
+  } catch (parseError) {
+    throw new Error('Respuesta inválida de Turnstile.');
+  }
+
+  if (status !== 200 || result.success !== true) {
+    const codes = Array.isArray(result['error-codes']) ? result['error-codes'].join(',') : 'unknown';
+    throw new Error('Turnstile rechazó la solicitud: ' + codes);
+  }
+
+  if (result.hostname && ALLOWED_HOSTNAMES.indexOf(String(result.hostname).toLowerCase()) === -1) {
+    throw new Error('Hostname de Turnstile no autorizado.');
   }
 }
 
