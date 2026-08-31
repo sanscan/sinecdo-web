@@ -1,0 +1,78 @@
+name: Sinecdo identity render QA
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download production snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p qa/site/brand/sinecdo qa/out
+          curl -fsSL 'https://sinecdo.com/?render-qa=20260831' -o qa/site/index.html
+          curl -fsSL 'https://sinecdo.com/styles.css?v=identity-20260831' -o qa/site/styles.css
+          curl -fsSL 'https://sinecdo.com/form.css?v=identity-20260831' -o qa/site/form.css
+          curl -fsSL 'https://sinecdo.com/lead-capture.js?v=restore-final-20260831-2' -o qa/site/lead-capture.js
+          for f in sinecdo-lockup-horizontal-dark-bg.svg sinecdo-lockup-horizontal-light-bg.svg sinecdo-symbol-master-aqua.svg sinecdo-symbol-master-currentColor.svg favicon.svg favicon-16.svg favicon-32.svg favicon-48.svg favicon-64.svg; do
+            curl -fsSL "https://sinecdo.com/brand/sinecdo/$f?v=20260831" -o "qa/site/brand/sinecdo/$f"
+          done
+          grep -q 'class="brand-logo"' qa/site/index.html
+          grep -q 'class="footer-brand-logo"' qa/site/index.html
+          grep -q '/brand/sinecdo/favicon.svg' qa/site/index.html
+
+      - name: Render production snapshot desktop mobile favicon
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          python3 -m http.server 8123 --directory qa/site >/tmp/sinecdo-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,900 --screenshot=qa/out/desktop.png 'http://127.0.0.1:8123/'
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --screenshot=qa/out/mobile.png 'http://127.0.0.1:8123/'
+
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq imagemagick xvfb >/dev/null
+          xvfb-run -a bash -c '
+            set -e
+            '"$CHROME"' --no-sandbox --disable-gpu --no-first-run --no-default-browser-check --user-data-dir=/tmp/sinecdo-favicon-render --window-size=1200,800 "http://127.0.0.1:8123/" >/tmp/chrome-local.log 2>&1 &
+            pid=$!
+            sleep 5
+            import -window root "'"$GITHUB_WORKSPACE"'/qa/out/favicon-browser.png"
+            kill $pid || true
+          '
+
+          cp qa/site/brand/sinecdo/favicon.svg qa/out/favicon-live.svg
+          printf 'Rendered from files downloaded from https://sinecdo.com/ during this QA run.\n' > qa/out/README.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sinecdo-identity-render-qa
+          path: qa/out/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove one-shot render workflow
+        if: always()
+        shell: bash
+        run: |
+          set -e
+          rm -f .github/workflows/identity-render-qa.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'Remove one-shot identity render QA workflow'
+            git push
+          fi
