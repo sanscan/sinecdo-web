@@ -96,7 +96,7 @@ function respond_(ok, requestId, code) {
 
   const json = JSON.stringify(payload).replace(/</g, '\\u003c');
   const html = '<!doctype html><html><head><meta charset="utf-8"></head><body>' +
-    '<script>window.parent.postMessage(' + json + ', "*");<\/script>' +
+    '<script>window.parent.postMessage(' + json + ', "*");</script>' +
     '</body></html>';
 
   return HtmlService.createHtmlOutput(html)
