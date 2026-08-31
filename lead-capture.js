@@ -1,8 +1,6 @@
 (() => {
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzM62i0CqEVCqH7oxFj3wBsjqB0Ry2Pza6Zi9e5jUiUGwi4OD-S_pArMURvk62qdxQL1A/exec';
   const SESSION_KEY = 'sinecdoLeadSubmitted';
-  const RESPONSE_SOURCE = 'sinecdo-lead';
-  const RESPONSE_TIMEOUT_MS = 25000;
   const form = document.querySelector('#lead-form');
 
   if (!form) return;
@@ -13,21 +11,7 @@
   const params = new URLSearchParams(window.location.search);
   const webInput = form.elements.namedItem('web');
   const linkedinInput = form.elements.namedItem('linkedin');
-
   let submitted = false;
-  let pendingRequestId = '';
-  let responseTimer = null;
-
-  const responseFrame = document.createElement('iframe');
-  responseFrame.name = 'sinecdo-lead-response-frame';
-  responseFrame.title = 'Respuesta del formulario';
-  responseFrame.hidden = true;
-  responseFrame.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(responseFrame);
-
-  form.action = ENDPOINT;
-  form.method = 'POST';
-  form.target = responseFrame.name;
 
   const requestInput = document.createElement('input');
   requestInput.type = 'hidden';
@@ -57,6 +41,11 @@
     setHidden('page_url', window.location.href);
   };
 
+  const makeRequestId = () => {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+    return `req-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  };
+
   const setBusy = (busy) => {
     submit.disabled = busy;
     if (busy) {
@@ -68,19 +57,13 @@
     }
   };
 
-  const showError = (message) => {
-    status.textContent = message;
-    status.className = 'form-status error';
-    status.hidden = false;
-    status.focus();
-  };
-
   const showSubmittedState = () => {
     submitted = true;
     form.classList.add('is-submitted');
     Array.from(form.elements).forEach((control) => {
       control.disabled = true;
     });
+
     status.innerHTML = `
       <span class="form-status-kicker">Solicitud recibida</span>
       <strong>Gracias. Recibimos tu solicitud.</strong>
@@ -91,40 +74,12 @@
     status.focus();
   };
 
-  const finishWithError = () => {
-    pendingRequestId = '';
-    if (responseTimer) {
-      clearTimeout(responseTimer);
-      responseTimer = null;
-    }
-    setBusy(false);
-    showError('No pudimos registrar la solicitud. Probá nuevamente o escribinos a diagnostico@sinecdo.com.');
+  const showError = () => {
+    status.textContent = 'No pudimos enviar la solicitud. Probá nuevamente o escribinos a diagnostico@sinecdo.com.';
+    status.className = 'form-status error';
+    status.hidden = false;
+    status.focus();
   };
-
-  const makeRequestId = () => {
-    if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
-    return `req-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  };
-
-  window.addEventListener('message', (event) => {
-    const data = event.data;
-    if (!data || data.source !== RESPONSE_SOURCE) return;
-    if (!pendingRequestId || data.requestId !== pendingRequestId) return;
-
-    if (responseTimer) {
-      clearTimeout(responseTimer);
-      responseTimer = null;
-    }
-
-    if (data.ok === true) {
-      pendingRequestId = '';
-      sessionStorage.setItem(SESSION_KEY, '1');
-      showSubmittedState();
-      return;
-    }
-
-    finishWithError();
-  });
 
   populateTracking();
 
@@ -133,25 +88,39 @@
     return;
   }
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    if (submitted || pendingRequestId || !form.reportValidity()) return;
+    if (submitted || !form.reportValidity()) return;
 
     if (webInput) webInput.value = normalizeUrl(webInput.value);
     if (linkedinInput) linkedinInput.value = normalizeUrl(linkedinInput.value);
 
-    pendingRequestId = makeRequestId();
-    requestInput.value = pendingRequestId;
+    requestInput.value = makeRequestId();
+    const data = new FormData(form);
+    const body = new URLSearchParams();
+    data.forEach((value, key) => body.append(key, String(value)));
+
     setBusy(true);
     status.textContent = 'Enviando solicitud…';
     status.className = 'form-status';
     status.hidden = false;
 
-    responseTimer = window.setTimeout(() => {
-      if (!pendingRequestId) return;
-      finishWithError();
-    }, RESPONSE_TIMEOUT_MS);
+    try {
+      await fetch(ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: body.toString()
+      });
 
-    HTMLFormElement.prototype.submit.call(form);
+      sessionStorage.setItem(SESSION_KEY, '1');
+      showSubmittedState();
+    } catch (error) {
+      console.error(error);
+      setBusy(false);
+      showError();
+    }
   });
 })();
