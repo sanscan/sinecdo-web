@@ -1,0 +1,5 @@
+<link rel="icon" href="/brand/sinecdo/favicon.svg?v=20260831" type="image/svg+xml">
+<link rel="icon" href="/brand/sinecdo/favicon-16.svg?v=20260831" sizes="16x16" type="image/svg+xml">
+<link rel="icon" href="/brand/sinecdo/favicon-32.svg?v=20260831" sizes="32x32" type="image/svg+xml">
+<link rel="icon" href="/brand/sinecdo/favicon-48.svg?v=20260831" sizes="48x48" type="image/svg+xml">
+<link rel="icon" href="/brand/sinecdo/favicon-64.svg?v=20260831" sizes="64x64" type="image/svg+xml">

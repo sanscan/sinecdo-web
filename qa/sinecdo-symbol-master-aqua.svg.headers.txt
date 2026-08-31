@@ -1,0 +1,17 @@
+HTTP/2 200 
+date: Mon, 31 Aug 2026 20:40:07 GMT
+content-type: image/svg+xml
+vary: Accept-Encoding
+cache-control: public, max-age=604800
+expires: Mon, 07 Sep 2026 20:40:07 GMT
+last-modified: Mon, 31 Aug 2026 20:35:03 GMT
+etag: W/"18d-6a95e577-e6cd7f0cfe6eb778;gz"
+platform: hostinger
+panel: hpanel
+content-security-policy: upgrade-insecure-requests
+server: hcdn
+alt-svc: h3=":443"; ma=86400
+x-hcdn-request-id: 93ae152388df4cc6ddf484d4cfe1e9a9-bos-edge4
+x-hcdn-cache-status: MISS
+x-hcdn-upstream-rt: 0.121
+
