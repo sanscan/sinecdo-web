@@ -74,10 +74,18 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
   text-decoration: none;
-  font-size: 25px;
-  font-weight: 760;
-  letter-spacing: -.055em;
+  line-height: 0;
+}
+
+.brand-logo {
+  display: block;
+  width: clamp(132px, 12vw, 160px);
+  height: auto;
+  aspect-ratio: 293.382 / 80;
 }
 
 .nav-links {
@@ -435,7 +443,19 @@ button, a { -webkit-tap-highlight-color: transparent; }
   font-size: 12px;
 }
 .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-.footer-row strong { color: var(--stone); font-size: 18px; letter-spacing: -.04em; }
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  line-height: 0;
+}
+
+.footer-brand-logo {
+  display: block;
+  width: 138px;
+  height: auto;
+  aspect-ratio: 293.382 / 80;
+}
 
 @media (max-width: 980px) {
   .hero { grid-template-columns: 1fr; gap: 44px; min-height: auto; }
@@ -451,6 +471,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 720px) {
   .wrap { width: min(calc(100% - 28px), var(--max)); }
   .nav { min-height: 64px; }
+  .brand-logo { width: 132px; }
+  .footer-brand-logo { width: 126px; }
   .nav-links > a:not(.button) { display: none; }
   .hero { padding-block: 58px 66px; }
   .hero h1 { font-size: clamp(49px, 15vw, 72px); }
