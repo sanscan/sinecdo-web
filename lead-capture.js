@@ -1,7 +1,8 @@
 (() => {
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzM62i0CqEVCqH7oxFj3wBsjqB0Ry2Pza6Zi9e5jUiUGwi4OD-S_pArMURvk62qdxQL1A/exec';
-  const TURNSTILE_SITE_KEY = '0x4AAAAAAEjGqVTYV872l_KA';
   const SESSION_KEY = 'sinecdoLeadSubmitted';
+  const RESPONSE_SOURCE = 'sinecdo-lead';
+  const RESPONSE_TIMEOUT_MS = 25000;
   const form = document.querySelector('#lead-form');
 
   if (!form) return;
@@ -12,9 +13,26 @@
   const params = new URLSearchParams(window.location.search);
   const webInput = form.elements.namedItem('web');
   const linkedinInput = form.elements.namedItem('linkedin');
-  const consent = form.querySelector('.form-consent');
+
   let submitted = false;
-  let turnstileWidgetId = null;
+  let pendingRequestId = '';
+  let responseTimer = null;
+
+  const responseFrame = document.createElement('iframe');
+  responseFrame.name = 'sinecdo-lead-response-frame';
+  responseFrame.title = 'Respuesta del formulario';
+  responseFrame.hidden = true;
+  responseFrame.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(responseFrame);
+
+  form.action = ENDPOINT;
+  form.method = 'POST';
+  form.target = responseFrame.name;
+
+  const requestInput = document.createElement('input');
+  requestInput.type = 'hidden';
+  requestInput.name = 'request_id';
+  form.appendChild(requestInput);
 
   const setHidden = (name, value) => {
     const input = form.elements.namedItem(name);
@@ -41,6 +59,32 @@
     setHidden('page_url', window.location.href);
   };
 
+  const setBusy = (busy) => {
+    submit.disabled = busy;
+    if (busy) {
+      submit.setAttribute('aria-busy', 'true');
+      submitLabel.textContent = 'Enviando…';
+    } else {
+      submit.removeAttribute('aria-busy');
+      submitLabel.textContent = 'Enviar solicitud';
+    }
+  };
+
+  const showError = (message) => {
+    status.textContent = message;
+    status.className = 'form-status error';
+    status.hidden = false;
+    status.focus();
+  };
+
+  const resetTurnstile = () => {
+    try {
+      if (window.turnstile) window.turnstile.reset();
+    } catch (error) {
+      console.warn('Turnstile reset failed', error);
+    }
+  };
+
   const showSubmittedState = () => {
     submitted = true;
     form.classList.add('is-submitted');
@@ -57,80 +101,49 @@
     status.focus();
   };
 
-  const showTurnstileMessage = (message) => {
-    status.textContent = message;
-    status.className = 'form-status error';
-    status.hidden = false;
-    status.focus();
-  };
+  const finishWithError = (code) => {
+    pendingRequestId = '';
+    if (responseTimer) {
+      clearTimeout(responseTimer);
+      responseTimer = null;
+    }
+    setBusy(false);
+    resetTurnstile();
 
-  const mountTurnstile = () => {
-    if (!consent || form.querySelector('.turnstile-wrap')) return;
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'turnstile-wrap';
-    wrapper.setAttribute('aria-label', 'Verificación anti-spam');
-    consent.before(wrapper);
-
-    const render = () => {
-      if (!window.turnstile || turnstileWidgetId !== null) return;
-      turnstileWidgetId = window.turnstile.render(wrapper, {
-        sitekey: TURNSTILE_SITE_KEY,
-        theme: 'dark',
-        size: 'flexible',
-        'response-field': true,
-        'response-field-name': 'cf-turnstile-response',
-        callback: () => {
-          if (!submitted) {
-            status.hidden = true;
-            status.className = 'form-status';
-          }
-        },
-        'expired-callback': () => {
-          if (!submitted) showTurnstileMessage('La verificación anti-spam venció. Completala nuevamente para enviar la solicitud.');
-        },
-        'error-callback': () => {
-          if (!submitted) showTurnstileMessage('No pudimos cargar la verificación anti-spam. Recargá la página e intentá nuevamente.');
-        }
-      });
-    };
-
-    if (window.turnstile) {
-      render();
+    if (code === 'captcha') {
+      showError('No pudimos validar la verificación anti-spam. Esperá unos segundos, completala nuevamente y volvé a enviar.');
       return;
     }
 
-    const existing = document.querySelector('script[data-sinecdo-turnstile]');
-    if (existing) {
-      existing.addEventListener('load', render, { once: true });
+    showError('No pudimos registrar la solicitud. Probá nuevamente o escribinos a diagnostico@sinecdo.com.');
+  };
+
+  const makeRequestId = () => {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      return window.crypto.randomUUID();
+    }
+    return `req-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  };
+
+  window.addEventListener('message', (event) => {
+    const data = event.data;
+    if (!data || data.source !== RESPONSE_SOURCE) return;
+    if (!pendingRequestId || data.requestId !== pendingRequestId) return;
+
+    if (responseTimer) {
+      clearTimeout(responseTimer);
+      responseTimer = null;
+    }
+
+    if (data.ok === true) {
+      pendingRequestId = '';
+      sessionStorage.setItem(SESSION_KEY, '1');
+      showSubmittedState();
       return;
     }
 
-    const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-    script.async = true;
-    script.defer = true;
-    script.dataset.sinecdoTurnstile = 'true';
-    script.addEventListener('load', render, { once: true });
-    script.addEventListener('error', () => {
-      showTurnstileMessage('No pudimos cargar la verificación anti-spam. Recargá la página e intentá nuevamente.');
-    }, { once: true });
-    document.head.appendChild(script);
-  };
-
-  // Accept domains without protocol. Web is required for this short diagnostic request.
-  if (webInput) {
-    webInput.type = 'text';
-    webInput.inputMode = 'url';
-    webInput.required = true;
-    webInput.placeholder = 'www.empresa.com';
-  }
-
-  if (linkedinInput) {
-    linkedinInput.type = 'text';
-    linkedinInput.inputMode = 'url';
-    linkedinInput.placeholder = 'linkedin.com/in/usuario';
-  }
+    finishWithError(data.code || 'server');
+  });
 
   populateTracking();
 
@@ -139,57 +152,32 @@
     return;
   }
 
-  mountTurnstile();
-
-  form.addEventListener('submit', async (event) => {
+  form.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    if (submitted || !form.reportValidity()) return;
+    if (submitted || pendingRequestId || !form.reportValidity()) return;
 
     const turnstileResponse = form.elements.namedItem('cf-turnstile-response');
     if (!turnstileResponse || !String(turnstileResponse.value || '').trim()) {
-      showTurnstileMessage('Completá la verificación anti-spam antes de enviar la solicitud.');
+      showError('Completá la verificación anti-spam antes de enviar la solicitud.');
       return;
     }
 
     if (webInput) webInput.value = normalizeUrl(webInput.value);
     if (linkedinInput) linkedinInput.value = normalizeUrl(linkedinInput.value);
 
-    const data = new FormData(form);
-    const body = new URLSearchParams();
-    data.forEach((value, key) => body.append(key, String(value)));
-
-    submit.disabled = true;
-    submit.setAttribute('aria-busy', 'true');
-    submitLabel.textContent = 'Enviando…';
-    status.hidden = true;
+    pendingRequestId = makeRequestId();
+    requestInput.value = pendingRequestId;
+    setBusy(true);
+    status.textContent = 'Enviando y verificando la solicitud…';
     status.className = 'form-status';
+    status.hidden = false;
 
-    try {
-      await fetch(ENDPOINT, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-        },
-        body: body.toString()
-      });
+    responseTimer = window.setTimeout(() => {
+      if (!pendingRequestId) return;
+      finishWithError('timeout');
+    }, RESPONSE_TIMEOUT_MS);
 
-      sessionStorage.setItem(SESSION_KEY, '1');
-      showSubmittedState();
-    } catch (error) {
-      console.error(error);
-      status.textContent = 'No pudimos enviar la solicitud. Probá de nuevo o escribinos a diagnostico@sinecdo.com.';
-      status.classList.add('error');
-      status.hidden = false;
-      status.focus();
-      if (window.turnstile && turnstileWidgetId !== null) window.turnstile.reset(turnstileWidgetId);
-    } finally {
-      if (!submitted) {
-        submit.disabled = false;
-        submit.removeAttribute('aria-busy');
-        submitLabel.textContent = 'Enviar solicitud';
-      }
-    }
+    HTMLFormElement.prototype.submit.call(form);
   });
 })();
