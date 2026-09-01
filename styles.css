@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
 :root {
   color-scheme: dark;
   --graphite-950: #121514;
@@ -7,14 +9,17 @@
   --stone: #f2f0e9;
   --stone-muted: #b8bbb4;
   --stone-dim: #858b86;
-  --aqua: #63e6d2;
-  --aqua-soft: rgba(99, 230, 210, .12);
-  --aqua-line: rgba(99, 230, 210, .34);
+  --aqua: #00f3f8;
+  --aqua-soft: rgba(0, 243, 248, .12);
+  --aqua-line: rgba(0, 243, 248, .34);
   --terracotta: #d97b5f;
   --line: rgba(242, 240, 233, .13);
   --line-strong: rgba(242, 240, 233, .23);
   --max: 1180px;
   --radius: 22px;
+  --brand-word-weight: 760;
+  --brand-word-tracking: 0em;
+  --brand-word-leading: .98;
 }
 
 * { box-sizing: border-box; }
@@ -24,10 +29,11 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 82% 10%, rgba(99, 230, 210, .055), transparent 28rem),
+    radial-gradient(circle at 82% 10%, rgba(0, 243, 248, .055), transparent 28rem),
     var(--graphite-950);
   color: var(--stone);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-optical-sizing: auto;
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -73,20 +79,53 @@ button, a { -webkit-tap-highlight-color: transparent; }
   gap: 24px;
 }
 
-.brand {
+.brand,
+.footer-brand {
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
+  gap: 8px;
   text-decoration: none;
   line-height: 0;
+  color: var(--stone);
 }
 
-.brand-logo {
-  display: block;
-  width: clamp(132px, 12vw, 160px);
-  height: auto;
-  aspect-ratio: 293.382 / 80;
+/*
+  Web wordmark: live Inter variable text, intentionally tied to the same
+  weight / tracking / leading as .section-title. The existing <img> stays
+  in markup as a fallback asset but is visually replaced here.
+*/
+.brand-logo,
+.footer-brand-logo {
+  display: none;
 }
+
+.brand::before,
+.footer-brand::before {
+  content: "";
+  display: block;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  background: url('/brand/sinecdo/sinecdo-symbol-master-aqua.svg?v=20260901-final-inter760') center / contain no-repeat;
+}
+
+.brand::after,
+.footer-brand::after {
+  content: "sinecdo";
+  display: block;
+  color: var(--stone);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: var(--brand-word-weight);
+  letter-spacing: var(--brand-word-tracking);
+  line-height: var(--brand-word-leading);
+  white-space: nowrap;
+}
+
+.brand::after { font-size: 34px; }
+.footer-brand::before { width: 30px; height: 30px; }
+.footer-brand::after { font-size: 28px; }
 
 .nav-links {
   display: flex;
@@ -146,7 +185,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   height: 8px;
   border-radius: 50%;
   background: var(--aqua);
-  box-shadow: 0 0 24px rgba(99, 230, 210, .7);
+  box-shadow: 0 0 24px rgba(0, 243, 248, .7);
 }
 
 .hero {
@@ -162,14 +201,25 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .section-title,
 .quote-title {
   margin: 0;
-  font-weight: 760;
-  letter-spacing: -.055em;
   line-height: .98;
 }
 
 .hero h1 {
   max-width: 770px;
+  font-weight: 760;
+  letter-spacing: -.055em;
   font-size: clamp(54px, 7vw, 100px);
+}
+
+/* Canonical H2 / wordmark typography */
+.section-title {
+  max-width: 860px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: var(--brand-word-weight);
+  letter-spacing: var(--brand-word-tracking);
+  line-height: var(--brand-word-leading);
+  font-size: clamp(42px, 5.7vw, 74px);
 }
 
 .hero-copy > p:not(.eyebrow):not(.microcopy) {
@@ -239,7 +289,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .signal-map .line.active { stroke: var(--aqua); stroke-opacity: .62; }
 .signal-map .node { fill: var(--graphite-900); stroke: rgba(242,240,233,.25); stroke-width: 1.4; }
 .signal-map .node.active { fill: var(--aqua); stroke: var(--aqua); }
-.signal-map .ring { fill: none; stroke: rgba(99,230,210,.17); }
+.signal-map .ring { fill: none; stroke: rgba(0,243,248,.17); }
 .signal-map text { fill: var(--stone-muted); font: 12px Inter, system-ui, sans-serif; }
 .signal-map .active-text { fill: var(--aqua); }
 
@@ -254,11 +304,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   gap: 60px;
   align-items: end;
   margin-bottom: 56px;
-}
-
-.section-title {
-  max-width: 860px;
-  font-size: clamp(42px, 5.7vw, 74px);
 }
 
 .section-lead {
@@ -360,7 +405,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   background: rgba(255,255,255,.018);
 }
 
-.fit-column.good { background: linear-gradient(145deg, rgba(99,230,210,.07), rgba(255,255,255,.012)); }
+.fit-column.good { background: linear-gradient(145deg, rgba(0,243,248,.07), rgba(255,255,255,.012)); }
 .fit-column h3 { margin: 0 0 28px; font-size: 24px; letter-spacing: -.03em; }
 
 .clean-list { list-style: none; padding: 0; margin: 0; }
@@ -443,19 +488,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   font-size: 12px;
 }
 .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-.footer-brand {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-  line-height: 0;
-}
-
-.footer-brand-logo {
-  display: block;
-  width: 138px;
-  height: auto;
-  aspect-ratio: 293.382 / 80;
-}
 
 @media (max-width: 980px) {
   .hero { grid-template-columns: 1fr; gap: 44px; min-height: auto; }
@@ -471,8 +503,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 720px) {
   .wrap { width: min(calc(100% - 28px), var(--max)); }
   .nav { min-height: 64px; }
-  .brand-logo { width: 132px; }
-  .footer-brand-logo { width: 126px; }
+  .brand { gap: 7px; }
+  .brand::before { width: 31px; height: 31px; }
+  .brand::after { font-size: 29px; }
+  .footer-brand::before { width: 28px; height: 28px; }
+  .footer-brand::after { font-size: 26px; }
   .nav-links > a:not(.button) { display: none; }
   .hero { padding-block: 58px 66px; }
   .hero h1 { font-size: clamp(49px, 15vw, 72px); }
