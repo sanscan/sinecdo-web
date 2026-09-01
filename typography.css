@@ -94,6 +94,7 @@ body {
 .diagnostic-main > p,
 .next-step p,
 .trust-copy > p,
+.trust-signal,
 .lead-capture-copy > p:not(.eyebrow),
 .lead-capture-point,
 .final-cta p {
@@ -112,6 +113,7 @@ body {
 .clean-list li,
 .next-step p,
 .trust-copy > p,
+.trust-signal,
 .lead-capture-copy > p:not(.eyebrow),
 .lead-capture-point,
 .final-cta p {
@@ -148,6 +150,8 @@ p em strong,
   font-style: italic;
   font-weight: 700;
 }
+
+.lead-capture-point strong { color: inherit; }
 
 /* Emoji as semantic editorial marker, not decoration. */
 .title-emoji {
