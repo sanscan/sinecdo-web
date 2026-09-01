@@ -9,6 +9,10 @@
   --editorial-display-leading: .98;
   --editorial-h1-tracking: -.045em;
   --editorial-h2-tracking: -.025em;
+  --editorial-copy: #C4C7C2;
+  --aqua: #63E6D2;
+  --aqua-soft: rgba(99, 230, 210, .12);
+  --aqua-line: rgba(99, 230, 210, .34);
 }
 
 /*
@@ -20,6 +24,9 @@
 body {
   font-family: var(--editorial-font);
   font-weight: var(--editorial-body-weight);
+  background:
+    radial-gradient(circle at 82% 10%, rgba(99, 230, 210, .055), transparent 28rem),
+    var(--graphite-950);
 }
 
 /* Keep the approved wordmark untouched in Inter. */
@@ -97,11 +104,30 @@ body {
 
 .hero-copy > p:not(.eyebrow):not(.microcopy) { line-height: 1.52; }
 
+/* Unified body-copy color on dark surfaces. Weight/style never changes hue. */
+.hero-copy > p:not(.eyebrow):not(.microcopy),
+.section-lead,
+.card p,
+.method-card p,
+.clean-list li,
+.next-step p,
+.trust-copy > p,
+.lead-capture-copy > p:not(.eyebrow),
+.lead-capture-point,
+.final-cta p {
+  color: var(--editorial-copy);
+}
+
+/* The aqua diagnostic panel needs its own dark readable copy color. */
+.diagnostic-main > p {
+  color: rgba(16, 32, 28, .78);
+}
+
 /* Semantic emphasis system. */
 p strong,
 .card strong,
 .clean-list strong {
-  color: var(--stone);
+  color: inherit;
   font-weight: 700;
 }
 
@@ -118,7 +144,7 @@ p em strong,
 .card em strong,
 .clean-list strong em,
 .clean-list em strong {
-  color: var(--stone);
+  color: inherit;
   font-style: italic;
   font-weight: 700;
 }
@@ -176,4 +202,15 @@ p em strong,
   .lead-capture-copy > p:not(.eyebrow) {
     line-height: 1.55;
   }
+}
+
+/* Aqua restoration — softer canonical signal #63E6D2. */
+.eyebrow::before { box-shadow: 0 0 24px rgba(99, 230, 210, .7); }
+.signal-map .ring { stroke: rgba(99, 230, 210, .17); }
+.fit-column.good { background: linear-gradient(145deg, rgba(99,230,210,.07), rgba(255,255,255,.012)); }
+.lead-form-shell { background: linear-gradient(145deg, rgba(99,230,210,.055), rgba(255,255,255,.015)); }
+.form-field input:focus,
+.form-field textarea:focus { box-shadow: 0 0 0 3px rgba(99,230,210,.09); }
+.lead-form.is-submitted .form-status.success {
+  background: linear-gradient(145deg, rgba(99,230,210,.13), rgba(99,230,210,.055));
 }
