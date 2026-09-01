@@ -1,0 +1,38 @@
+name: Bump favicon final cache
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/bump-favicon-final.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Update favicon cache key
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          s = s.replace('20260901-circle', '20260901-rounded-air-v2')
+          p.write_text(s)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Use refined rounded-square favicon" || true
+          git push
+      - name: Remove one-shot workflow
+        run: |
+          git rm .github/workflows/bump-favicon-final.yml
+          git commit -m "Remove one-shot favicon workflow"
+          git push
