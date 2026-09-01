@@ -1,7 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="64" height="64" role="img" aria-label="Sinecdo favicon circular">
-  <circle cx="90" cy="90" r="88" fill="#05090C"/>
-  <g transform="translate(16.2 16.2) scale(.82)" fill="#00F3F8">
-    <path d="M155 26 H90 C60 26 36 49 36 77 C36 90 41 100 50 107 L75 104 V85 C75 75 82 69 93 69 H123 C141 69 155 53 155 35 Z"/>
-    <path d="M139 81 L115 84 V104 C115 114 108 119 99 119 H66 C47 119 34 135 34 155 V162 H108 C134 162 155 140 155 113 C155 100 149 89 139 81 Z"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="64" height="64" role="img" aria-label="Sinecdo favicon">
+  <rect width="180" height="180" rx="34" fill="#05090C"/>
+  <g transform="translate(20.07 20.44) scale(.74)" fill="#00F3F8"><path d="M155 26 H90 C60 26 36 49 36 77 C36 90 41 100 50 107 L75 104 V85 C75 75 82 69 93 69 H123 C141 69 155 53 155 35 Z"/><path d="M139 81 L115 84 V104 C115 114 108 119 99 119 H66 C47 119 34 135 34 155 V162 H108 C134 162 155 140 155 113 C155 100 149 89 139 81 Z"/></g>
 </svg>
