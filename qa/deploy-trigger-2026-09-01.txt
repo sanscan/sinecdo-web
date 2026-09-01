@@ -1,0 +1,4 @@
+SINECDO PUBLIC DEPLOY TRIGGER
+Date: 2026-09-01
+Reason: publish final identity update (Inter variable 760 / tracking 0em / aqua #00F3F8 / final logo + favicon).
+Source of truth: main branch.
