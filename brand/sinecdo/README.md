@@ -29,7 +29,9 @@ El aqua más brillante `#00F3F8` queda descartado por exceso de luminosidad en p
 Aplicar `#63E6D2` a señales de interfaz, símbolo/isologo, favicon y componente aqua de los lockups.
 
 ## Copy editorial
-Color canónico del texto corrido sobre fondos oscuros: `#C4C7C2`.
+Color canónico del texto corrido sobre fondos oscuros: `#E4E6E2`.
+
+Es un gris muy claro, deliberadamente cercano al blanco pero todavía separado del Stone `#F2F0E9`.
 
 Bold, italic y bold+italic mantienen **exactamente el mismo color del párrafo**. El énfasis se produce únicamente por peso y estilo, no por cambio de color.
 
