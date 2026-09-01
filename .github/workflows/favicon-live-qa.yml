@@ -1,0 +1,35 @@
+name: Favicon live QA
+on:
+  push:
+    paths:
+      - '.github/workflows/favicon-live-qa.yml'
+permissions:
+  contents: write
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Wait for Hostinger and validate favicon
+        run: |
+          for i in {1..18}; do
+            html=$(curl -fsSL -H 'Cache-Control: no-cache' "https://sinecdo.com/?faviconqa=${GITHUB_RUN_ID}" || true)
+            if echo "$html" | grep -q 'favicon.svg?v=20260901-circle'; then
+              break
+            fi
+            sleep 10
+          done
+          echo "$html" | grep -q 'favicon.svg?v=20260901-circle'
+          fav=$(curl -fsSL -H 'Cache-Control: no-cache' "https://sinecdo.com/brand/sinecdo/favicon.svg?v=20260901-circle&qa=${GITHUB_RUN_ID}")
+          echo "$fav" | grep -q '<circle cx="90" cy="90" r="88" fill="#05090C"/>'
+          echo "$fav" | grep -q 'fill="#00F3F8"'
+      - name: Remove one-shot QA workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/favicon-live-qa.yml
+          git commit -m 'Remove one-shot favicon live QA [skip ci]'
+          git push origin main
