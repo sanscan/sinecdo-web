@@ -1,0 +1,41 @@
+name: Favicon rounded live QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/favicon-rounded-live-qa.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate production favicon
+        run: |
+          set -e
+          for i in {1..12}; do
+            curl -fsSL "https://sinecdo.com/?qa=favicon-rounded-air-v2-$i" -o /tmp/home.html || true
+            curl -fsSL "https://sinecdo.com/brand/sinecdo/favicon.svg?v=20260901-rounded-air-v2-$i" -o /tmp/favicon.svg || true
+            if grep -q '20260901-rounded-air-v2' /tmp/home.html 2>/dev/null && grep -q 'rx="34"' /tmp/favicon.svg 2>/dev/null && grep -q 'scale(.74)' /tmp/favicon.svg 2>/dev/null; then
+              echo "Production favicon validated"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Production did not update in time"
+          exit 1
+      - name: Remove one-shot workflow
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/favicon-rounded-live-qa.yml
+          git commit -m "Remove one-shot rounded favicon QA"
+          git push
