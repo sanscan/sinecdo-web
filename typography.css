@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..900;1,300..900&display=swap');
+
+:root {
+  --editorial-font: "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --editorial-body-weight: 300;
+  --editorial-ui-weight: 400;
+  --editorial-bold-weight: 700;
+  --editorial-display-weight: 780;
+  --editorial-display-leading: .98;
+  --editorial-h1-tracking: -.045em;
+  --editorial-h2-tracking: -.025em;
+}
+
+/*
+  Editorial typography layer — 2026-09-01
+  DM Sans = human/editorial communication.
+  JetBrains Mono = labels, metadata and technical signals.
+  Inter = Sinecdo wordmark only.
+*/
+body {
+  font-family: var(--editorial-font);
+  font-weight: var(--editorial-body-weight);
+}
+
+/* Keep the approved wordmark untouched in Inter. */
+.brand::after,
+.footer-brand::after {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 760;
+  letter-spacing: 0;
+  line-height: .98;
+}
+
+/* Human/UI layer */
+.nav-links,
+.site-footer,
+.microcopy,
+.form-consent,
+.form-note,
+.form-status,
+.form-field input,
+.form-field textarea {
+  font-family: var(--editorial-font);
+  font-weight: var(--editorial-ui-weight);
+}
+
+.button,
+.form-field label,
+.form-label,
+.lead-capture-point strong,
+.next-step .price {
+  font-family: var(--editorial-font);
+  font-weight: var(--editorial-bold-weight);
+}
+
+/* Display hierarchy: preserve existing scale, tune rhythm for DM Sans. */
+.hero h1,
+.section-title,
+.diagnostic-main h2,
+.lead-capture-copy h2,
+.final-cta h2 {
+  font-family: var(--editorial-font);
+  font-weight: var(--editorial-display-weight);
+  line-height: var(--editorial-display-leading);
+}
+
+.hero h1 { letter-spacing: var(--editorial-h1-tracking); }
+.section-title { letter-spacing: var(--editorial-h2-tracking); }
+.diagnostic-main h2,
+.lead-capture-copy h2 { letter-spacing: -.035em; }
+.final-cta h2 { letter-spacing: -.045em; }
+
+.method-card h3,
+.fit-column h3,
+.next-step h3 {
+  font-family: var(--editorial-font);
+  font-weight: var(--editorial-bold-weight);
+  letter-spacing: -.025em;
+}
+
+/* Light body copy — Regular remains reserved for small/UI copy. */
+.hero-copy > p:not(.eyebrow):not(.microcopy),
+.section-lead,
+.card p,
+.method-card p,
+.clean-list li,
+.diagnostic-main > p,
+.next-step p,
+.trust-copy > p,
+.lead-capture-copy > p:not(.eyebrow),
+.lead-capture-point,
+.final-cta p {
+  font-family: var(--editorial-font);
+  font-weight: 300;
+  line-height: 1.58;
+}
+
+.hero-copy > p:not(.eyebrow):not(.microcopy) { line-height: 1.52; }
+
+/* Semantic emphasis system. */
+p strong,
+.card strong,
+.clean-list strong {
+  color: var(--stone);
+  font-weight: 700;
+}
+
+p em,
+.card em,
+.clean-list em {
+  font-style: italic;
+  font-weight: 300;
+}
+
+p strong em,
+p em strong,
+.card strong em,
+.card em strong,
+.clean-list strong em,
+.clean-list em strong {
+  color: var(--stone);
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* Emoji as semantic editorial marker, not decoration. */
+.title-emoji {
+  display: inline-block;
+  margin-right: .14em;
+  font-size: .72em;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  vertical-align: .08em;
+}
+
+/* Replace the previous serif contrast with DM Sans Light Italic. */
+.quote-title {
+  font-family: var(--editorial-font);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: -.025em;
+  line-height: 1;
+}
+
+.signal-panel::after {
+  font-family: var(--editorial-font);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: .045em;
+}
+
+.signal-map text {
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-weight: 400;
+}
+
+/* JetBrains Mono remains the technical/detail layer. */
+.eyebrow,
+.signal-label,
+.alignment-item span,
+.method-card .num,
+.next-step .tag,
+.form-status-kicker {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@media (max-width: 720px) {
+  .section-lead,
+  .card p,
+  .method-card p,
+  .clean-list li,
+  .diagnostic-main > p,
+  .next-step p,
+  .trust-copy > p,
+  .lead-capture-copy > p:not(.eyebrow) {
+    line-height: 1.55;
+  }
+}
