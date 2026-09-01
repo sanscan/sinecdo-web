@@ -1,46 +1,45 @@
-# Sinecdo — identidad y tipografía web
+# Sinecdo — identidad final web
 
 Fecha: 2026-09-01
 
-## Wordmark / logo
+## Wordmark
 - texto: `sinecdo`
-- familia: **Inter variable**
+- familia: Inter variable
 - peso: `760`
 - tracking: `0em`
 - line-height: `.98`
 - Stone: `#F2F0E9`
 - Graphite: `#121514`
 
-El wordmark queda deliberadamente separado del sistema editorial web: **el logo permanece en Inter 760**.
+El wordmark visible del header/footer conserva Inter 760 y no cambia con el sistema editorial DM Sans.
 
 ## Sistema editorial web
-- familia base: **DM Sans**;
-- titulares principales: DM Sans variable `780` aprox.;
-- párrafos/editorial: DM Sans Light `300`;
-- UI y textos pequeños: DM Sans Regular `400`;
-- énfasis: Bold `700`, Italic Light y Bold Italic;
-- contrapunto editorial: DM Sans Light Italic;
-- escala de tamaños: conserva la relación de la V0 con ajustes ópticos de tracking/leading.
-
-Archivo de implementación: `typography.css`.
-
-## Capa técnica
-**JetBrains Mono** se conserva para eyebrows, labels, numeraciones, tags, metadata y señales técnicas.
-
-## Emojis
-Los emojis se usan como marcadores semánticos selectivos en títulos y componentes, no como decoración sistemática.
+- tipografía principal: DM Sans;
+- display/títulos principales: variable aprox. `780`;
+- H3: `700`;
+- párrafos: Light `300`;
+- UI pequeña: `400`;
+- JetBrains Mono: labels, tags, numeraciones y señales técnicas.
 
 ## Aqua
-Aqua canónico: `#00F3F8` (`rgb(0,243,248)`).
+Aqua canónico restaurado: `#63E6D2` (`rgb(99,230,210)`).
 
-No usar el aqua anterior `#63E6D2`.
+El aqua más brillante `#00F3F8` queda descartado por exceso de luminosidad en pantalla.
+
+Aplicar `#63E6D2` a señales de interfaz, símbolo/isologo, favicon y componente aqua de los lockups.
+
+## Copy editorial
+Color canónico del texto corrido sobre fondos oscuros: `#C4C7C2`.
+
+Bold, italic y bold+italic mantienen **exactamente el mismo color del párrafo**. El énfasis se produce únicamente por peso y estilo, no por cambio de color.
 
 ## Arquitectura
 - header/footer web: S SVG + texto vivo `sinecdo` en Inter 760;
-- sistema editorial: DM Sans;
 - master/fallback: SVG a curvas;
-- favicon: S aqua sola, transparente;
-- símbolo/isologo: `sinecdo-symbol-master-aqua.svg`.
+- favicon: S aqua `#63E6D2`, transparente;
+- símbolo/isologo: `sinecdo-symbol-master-aqua.svg`;
+- editorial: DM Sans;
+- técnica: JetBrains Mono.
 
 ## Regla
-No cambiar el wordmark a DM Sans. DM Sans es la tipografía editorial de la web; Inter queda reservada al logo. No alterar la geometría del símbolo.
+No cambiar el wordmark a DM Sans, no alterar la geometría del símbolo y no volver al aqua `#00F3F8` salvo nueva aprobación explícita.
