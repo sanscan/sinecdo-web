@@ -61,7 +61,7 @@
   border: 1px solid var(--line);
   border-radius: 28px;
   padding: clamp(24px, 4vw, 44px);
-  background: linear-gradient(145deg, rgba(0,243,248,.055), rgba(255,255,255,.015));
+  background: linear-gradient(145deg, rgba(99,230,210,.055), rgba(255,255,255,.015));
 }
 
 .lead-form {
@@ -128,7 +128,7 @@
 .form-field input:focus,
 .form-field textarea:focus {
   border-color: var(--aqua);
-  box-shadow: 0 0 0 3px rgba(0,243,248,.09);
+  box-shadow: 0 0 0 3px rgba(99,230,210,.09);
 }
 
 .form-consent {
@@ -209,7 +209,7 @@
   gap: 14px;
   padding: clamp(28px, 5vw, 46px);
   border-radius: 20px;
-  background: linear-gradient(145deg, rgba(0,243,248,.13), rgba(0,243,248,.055));
+  background: linear-gradient(145deg, rgba(99,230,210,.13), rgba(99,230,210,.055));
 }
 
 .form-status-kicker {

@@ -9,9 +9,9 @@
   --stone: #f2f0e9;
   --stone-muted: #b8bbb4;
   --stone-dim: #858b86;
-  --aqua: #00f3f8;
-  --aqua-soft: rgba(0, 243, 248, .12);
-  --aqua-line: rgba(0, 243, 248, .34);
+  --aqua: #63E6D2;
+  --aqua-soft: rgba(99, 230, 210, .12);
+  --aqua-line: rgba(99, 230, 210, .34);
   --terracotta: #d97b5f;
   --line: rgba(242, 240, 233, .13);
   --line-strong: rgba(242, 240, 233, .23);
@@ -29,11 +29,10 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 82% 10%, rgba(0, 243, 248, .055), transparent 28rem),
+    radial-gradient(circle at 82% 10%, rgba(99, 230, 210, .055), transparent 28rem),
     var(--graphite-950);
   color: var(--stone);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-optical-sizing: auto;
+  font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -107,7 +106,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   flex: 0 0 auto;
   width: 36px;
   height: 36px;
-  background: url('/brand/sinecdo/sinecdo-symbol-master-aqua.svg?v=20260901-final-inter760') center / contain no-repeat;
+  background: url('/brand/sinecdo/sinecdo-symbol-master-aqua.svg?v=20260902-brand-v06') center / contain no-repeat;
 }
 
 .brand::after,
@@ -185,7 +184,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   height: 8px;
   border-radius: 50%;
   background: var(--aqua);
-  box-shadow: 0 0 24px rgba(0, 243, 248, .7);
+  box-shadow: 0 0 24px rgba(99, 230, 210, .7);
 }
 
 .hero {
@@ -211,14 +210,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
   font-size: clamp(54px, 7vw, 100px);
 }
 
-/* Canonical H2 / wordmark typography */
+/* Editorial H2 base. Final hierarchy is reinforced in typography.css. */
 .section-title {
   max-width: 860px;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: var(--brand-word-weight);
-  letter-spacing: var(--brand-word-tracking);
-  line-height: var(--brand-word-leading);
+  font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 780;
+  letter-spacing: -.025em;
+  line-height: .98;
   font-size: clamp(42px, 5.7vw, 74px);
 }
 
@@ -258,7 +256,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   left: 28px;
   bottom: 24px;
   color: rgba(242, 240, 233, .42);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   font-size: 13px;
   font-style: italic;
   letter-spacing: .08em;
@@ -289,8 +287,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .signal-map .line.active { stroke: var(--aqua); stroke-opacity: .62; }
 .signal-map .node { fill: var(--graphite-900); stroke: rgba(242,240,233,.25); stroke-width: 1.4; }
 .signal-map .node.active { fill: var(--aqua); stroke: var(--aqua); }
-.signal-map .ring { fill: none; stroke: rgba(0,243,248,.17); }
-.signal-map text { fill: var(--stone-muted); font: 12px Inter, system-ui, sans-serif; }
+.signal-map .ring { fill: none; stroke: rgba(99,230,210,.17); }
+.signal-map text { fill: var(--stone-muted); font: 12px "DM Sans", system-ui, sans-serif; }
 .signal-map .active-text { fill: var(--aqua); }
 
 .section {
@@ -405,7 +403,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   background: rgba(255,255,255,.018);
 }
 
-.fit-column.good { background: linear-gradient(145deg, rgba(0,243,248,.07), rgba(255,255,255,.012)); }
+.fit-column.good { background: linear-gradient(145deg, rgba(99,230,210,.07), rgba(255,255,255,.012)); }
 .fit-column h3 { margin: 0 0 28px; font-size: 24px; letter-spacing: -.03em; }
 
 .clean-list { list-style: none; padding: 0; margin: 0; }
@@ -462,7 +460,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .quote-title {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   font-style: italic;
   font-weight: 400;
   font-size: clamp(42px, 5vw, 68px);
