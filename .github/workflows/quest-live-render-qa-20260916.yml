@@ -1,0 +1,26 @@
+name: Quest live render QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/quest-live-render-qa-20260916.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Hostinger deploy
+        run: sleep 45
+      - name: Validate live Quest JS and rendered DOM
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 8 --retry-delay 5 'https://sinecdo.com/assets/quiz/quest.js?v=hotfix-20260916' -o /tmp/quest.js
+          node --check /tmp/quest.js
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium-browser || command -v chromium || true)"
+          test -n "$CHROME"
+          "$CHROME" --headless --no-sandbox --disable-gpu --virtual-time-budget=3000 --dump-dom 'https://sinecdo.com/quest/?lang=es&qa=render-hotfix-20260916' > /tmp/dom.html
+          grep -q '¿Qué necesitás destrabar?' /tmp/dom.html
+          grep -q 'QUEST / 01' /tmp/dom.html
+          grep -q 'Mi marca no refleja el valor del negocio' /tmp/dom.html
+          echo 'Live Quest render QA passed.'
