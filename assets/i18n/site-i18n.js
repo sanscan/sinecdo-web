@@ -1,0 +1,20 @@
+/* Sinecdo web i18n, 2026-09-16. No external libraries. */
+(() => {
+  'use strict';
+  const LOCALE_KEY='sinecdo.locale.v1',DRAFT_KEY='sinecdo.form.language-switch.v1',TTL=30*60*1000;
+  const safe={get:(kind,key)=>{try{return window[kind].getItem(key);}catch(_){return null;}},set:(kind,key,value)=>{try{window[kind].setItem(key,value);}catch(_){}},del:(kind,key)=>{try{window[kind].removeItem(key);}catch(_){}}};
+  const parse=value=>{try{return JSON.parse(value);}catch(_){return null;}};
+  function preferredLanguage(languages){for(const value of languages||[]){const code=String(value).toLowerCase().split('-')[0];if(['es','en','it'].includes(code))return code;}return'es';}
+  function readForm(form){const data={};if(!form)return data;for(const element of form.elements){if(!element.name||element.type==='hidden'||element.name==='website_check'||element.type==='submit')continue;data[element.name]=element.type==='checkbox'?element.checked:element.value;}return data;}
+  function restoreForm(form,values){if(!form||!values||typeof values!=='object')return;for(const [name,value] of Object.entries(values)){const element=form.elements.namedItem(name);if(!element||element.type==='hidden'||element.name==='website_check')continue;if(element.type==='checkbox')element.checked=value===true;else if(typeof value==='string')element.value=value.slice(0,element.maxLength>0?element.maxLength:2000);}}
+  function mount(config,onSwitch){
+    const lang=config.locale,t=key=>config.strings[key]||key,form=document.getElementById('lead-form');
+    const draft=parse(safe.get('sessionStorage',DRAFT_KEY));safe.del('sessionStorage',DRAFT_KEY);if(!config.preview&&draft&&Date.now()-draft.at<TTL)restoreForm(form,draft.values);
+    function switchLanguage(next){if(!(next in config.routes)||next===lang)return;const values=readForm(form);safe.set('localStorage',LOCALE_KEY,next);if(onSwitch){onSwitch(next,values);return;}safe.set('sessionStorage',DRAFT_KEY,JSON.stringify({at:Date.now(),values}));const url=new URL(config.routes[next],location.origin);url.search=location.search;url.searchParams.delete('lang');url.hash=location.hash;location.assign(url.href);}
+    document.querySelectorAll('[data-site-lang]').forEach(a=>a.addEventListener('click',event=>{if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();switchLanguage(a.dataset.siteLang);}));
+    const suggestion=document.getElementById('language-suggestion'),saved=safe.get('localStorage',LOCALE_KEY),target=['es','en','it'].includes(saved)?saved:preferredLanguage(navigator.languages||[navigator.language]),dismissed=safe.get('sessionStorage','sinecdo.language.dismissed.'+target)==='1';
+    if(suggestion&&lang==='es'&&target!==lang&&!dismissed){const wrap=document.createElement('div');wrap.className='wrap';const text=document.createElement('p');text.textContent=config.suggestions[target].text;text.lang=target;const controls=document.createElement('div');controls.className='language-actions';const go=document.createElement('button');go.type='button';go.className='button small';go.textContent=config.suggestions[target].button;go.lang=target;go.addEventListener('click',()=>switchLanguage(target));const dismiss=document.createElement('button');dismiss.type='button';dismiss.className='language-dismiss';dismiss.textContent=t('language.dismiss');dismiss.addEventListener('click',()=>{suggestion.hidden=true;safe.set('sessionStorage','sinecdo.language.dismissed.'+target,'1');});controls.append(go,dismiss);wrap.append(text,controls);suggestion.replaceChildren(wrap);suggestion.hidden=false;}
+    return {read:()=>readForm(form),restore:values=>restoreForm(form,values)};
+  }
+  window.SinecdoSite={mount,preferredLanguage,restoreForm};const config=document.getElementById('site-runtime');if(config){try{mount(JSON.parse(config.textContent));}catch(err){console.error('Sinecdo i18n initialization failed',err);}}
+})();
