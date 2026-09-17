@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-header('Content-Type: application/json; charset=utf-8');header('Cache-Control: no-store');header('X-Content-Type-Options: nosniff');
+header('Content-Type: application/json; charset=utf-8');header('Cache-Control: no-store');header('X-Content-Type-Options: nosniff');header('X-Sinecdo-Intake-Version: legacy-parser-2');
 function reply(int $status,array $body):never{http_response_code($status);echo json_encode($body,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);exit;}
 function clean($value,int $max=2000):string{$s=trim((string)($value??''));return function_exists('mb_substr')?mb_substr($s,0,$max,'UTF-8'):substr($s,0,$max);}function valid_email(string $email):bool{return(bool)filter_var($email,FILTER_VALIDATE_EMAIL);}function safe_code($value,int $max=100):string{$s=clean($value,$max);return preg_match('/^[a-zA-Z0-9_\-\.\/ ]{0,'.$max.'}$/u',$s)?$s:'';}
 function json_file_read(string $path):?array{if(!is_file($path))return null;$raw=@file_get_contents($path);if($raw===false)return null;$d=json_decode($raw,true);return is_array($d)?$d:null;}function json_file_write(string $path,array $data):bool{$tmp=$path.'.tmp-'.bin2hex(random_bytes(4));$ok=@file_put_contents($tmp,json_encode($data,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),LOCK_EX);if($ok===false)return false;if(!@rename($tmp,$path)){@unlink($tmp);return false;}@chmod($path,0600);return true;}
