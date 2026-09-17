@@ -1,0 +1,25 @@
+name: Inspect legacy response safely
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/legacy-response-inspect-20260917.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post honeypot request without storing a lead
+        run: |
+          set -euo pipefail
+          RID="qa-honeypot-20260917-abcdef123456"
+          curl -sS -L --max-redirs 5 -D /tmp/headers.txt -o /tmp/body.html \
+            -H 'Content-Type: application/x-www-form-urlencoded;charset=UTF-8' \
+            --data-urlencode "request_id=$RID" \
+            --data-urlencode 'website_check=bot-test-do-not-store' \
+            'https://script.google.com/macros/s/AKfycbzM62i0CqEVCqH7oxFj3wBsjqB0Ry2Pza6Zi9e5jUiUGwi4OD-S_pArMURvk62qdxQL1A/exec'
+          echo '---FINAL HEADERS---'
+          tail -n 20 /tmp/headers.txt
+          echo '---BODY---'
+          cat /tmp/body.html
