@@ -19,7 +19,7 @@ function attribution(entry) {
  safe.set('sinecdo.attribution.v1',JSON.stringify(a));return {initial_channel:a.initial_channel,recent_channel:a.recent_channel,medium:a.medium,campaign:a.campaign,content:a.content,entry,path:location.pathname};
 }
 function event(name,meta={}) {
- const allowed=['need','role','timing','locale','entry','step'];const value={name};for(const k of allowed)if(typeof meta[k]==='string')value[k]=meta[k];
+ const allowed=['need','role','timing','locale','entry','step','intent'];const value={name};for(const k of allowed)if(typeof meta[k]==='string')value[k]=meta[k];
  window.dispatchEvent(new CustomEvent('sinecdo:metric',{detail:value}));
 }
 async function submit(payload) {
@@ -53,7 +53,7 @@ function mount(host,ctx){
   const payload={type:'quiz',locale:ctx.lang,quiz_version:VERSION,privacy_version:VERSION,consent_version:VERSION,accepted:true,contact_requested:intent!=='solo_registro',intent,...Object.fromEntries(['name','email','company','web','whatsapp','website_check'].map(k=>[k,draft[k]||''])),need:ctx.answers.need,role:ctx.answers.role,timing:ctx.answers.timing,industry:ctx.answers.industry||'',quiz_run_id:ctx.runId,attribution:attribution('hero_quiz')};
   const fingerprint=JSON.stringify(payload);if(!attempt||attempt.fingerprint!==fingerprint)attempt={fingerprint,id:uuid()};payload.request_id=attempt.id;
   busy=true;form.querySelectorAll('input,button').forEach(el=>el.disabled=true);show(t.sending);event('registration_submit',{locale:ctx.lang,entry:'quiz'});
-  try{const response=await submit(payload);receipt={id:response.receipt,intent};show((intent==='solo_registro'?t.ok:intent==='solicito_diagnostico'?t.diagnosticOk:t.contactOk)+' '+t.receipt+': '+response.receipt);event('registration_saved',{locale:ctx.lang,entry:'quiz'});}
+  try{const response=await submit(payload);receipt={id:response.receipt,intent};show((intent==='solo_registro'?t.ok:intent==='solicito_diagnostico'?t.diagnosticOk:t.contactOk)+' '+t.receipt+': '+response.receipt);event('registration_saved',{locale:ctx.lang,entry:'quiz',intent});}
   catch(err){show(err.message==='not_configured'?t.disabled:t.error,true);event('registration_error',{locale:ctx.lang,entry:'quiz'});}
   finally{busy=false;if(!receipt)form.querySelectorAll('input,button').forEach(el=>el.disabled=false);}
  });
