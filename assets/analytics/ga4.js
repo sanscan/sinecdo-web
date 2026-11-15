@@ -4,7 +4,8 @@
   'use strict';
   const MEASUREMENT_ID = 'G-L9VZZXF0ZW';
   const KEY = 'sinecdo.ga4.consent.v1';
-  const lang = (document.documentElement.lang || 'es').slice(0, 2).toLowerCase();
+  const quizLang = location.pathname === '/quest/' ? new URLSearchParams(location.search).get('lang') : null;
+  const lang = ['es','en','it'].includes(quizLang) ? quizLang : (document.documentElement.lang || 'es').slice(0, 2).toLowerCase();
   const i18n = {
     es: {title:'Analítica del sitio',copy:'Usamos Google Analytics para conocer qué funciona en la web. Es opcional y no afecta tu solicitud ni el quiz.',accept:'Aceptar analítica',reject:'Rechazar',settings:'Privacidad y analítica',policy:'Aviso de privacidad'},
     en: {title:'Website analytics',copy:'We use Google Analytics to understand how the website works. It is optional and does not affect your request or quiz.',accept:'Accept analytics',reject:'Reject',settings:'Privacy and analytics',policy:'Privacy notice'},
@@ -29,12 +30,13 @@
   }
   function safeReferrer() {
     if (!document.referrer) return '';
-    try { const ref = new URL(document.referrer); return ref.origin + ref.pathname; }
+    try { const ref = new URL(document.referrer); return ref.origin; }
     catch (_) { return ''; }
   }
   function loadGA4() {
     if (initialized || decision !== 'granted') return;
     initialized = true;
+    window['ga-disable-' + MEASUREMENT_ID] = false;
     window.dataLayer = window.dataLayer || [];
     window.gtag = function(){ window.dataLayer.push(arguments); };
     window.gtag('consent','default',denied);
@@ -58,13 +60,16 @@
     if (next === 'granted') loadGA4();
     else if (initialized) {
       // Stop further collection immediately, then unload the previously injected tag.
+      window['ga-disable-' + MEASUREMENT_ID] = true;
       window.gtag('consent','update',denied);
+      try {
       for (const pair of document.cookie.split(';')) {
         const name = pair.trim().split('=')[0];
         if (!/^_ga(?:$|_)/.test(name)) continue;
         document.cookie = name + '=; Max-Age=0; Path=/; SameSite=Lax';
         document.cookie = name + '=; Max-Age=0; Domain=.sinecdo.com; Path=/; SameSite=Lax';
       }
+      } catch (_) { /* Cookies may be blocked; opt-out must still complete. */ }
       location.reload();
     }
   }
@@ -77,6 +82,7 @@
     if (['owner','marketing','other'].includes(detail.role)) data.quiz_role = detail.role;
     if (detail.step && /^[1-4]$/.test(detail.step)) data.quiz_step = Number(detail.step);
     if (name === 'registration_saved') {
+      if (!['quiz','form_direct'].includes(detail.entry)) return;
       if (detail.entry === 'form_direct' || detail.intent === 'solicito_diagnostico' || detail.intent === 'quiero_contacto') {
         window.gtag('event','generate_lead',{...data, lead_source:detail.entry === 'form_direct' ? 'direct_form' : 'quiz'});
       } else window.gtag('event','quiz_registration_saved',data);
