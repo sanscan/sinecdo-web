@@ -1,0 +1,58 @@
+name: Sinecdo GA4 - QA and live verification
+on:
+  push:
+    branches: [main, feature/ga4-consent-20261105]
+    paths:
+      - '.github/workflows/ga4-release-qa.yml'
+      - 'assets/analytics/**'
+      - 'assets/quiz/**'
+      - 'qa/ga4-*.cjs'
+      - 'qa/verify-ga4-live.py'
+      - 'index.html'
+      - 'en/index.html'
+      - 'it/index.html'
+      - 'quest/index.html'
+      - 'privacy/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ga4-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript syntax
+        run: |
+          node --check assets/analytics/ga4.js
+          node --check assets/quiz/capture.js
+          node --check qa/ga4-browser.cjs
+          node --check qa/ga4-live-smoke.cjs
+      - name: Install isolated browser test dependency
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser regression - mocked Google and intake, no real leads
+        run: node qa/ga4-browser.cjs
+      - name: Verify deployed assets via existing Hostinger Git integration
+        if: github.ref == 'refs/heads/main'
+        run: python3 qa/verify-ga4-live.py
+      - name: One labelled QA visit - verify Google collector acknowledgement
+        if: github.ref == 'refs/heads/main'
+        run: node qa/ga4-live-smoke.cjs
+      - name: Preserve test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinecdo-ga4-qa-${{ github.run_id }}
+          path: qa-output/
+          if-no-files-found: ignore
+          retention-days: 7
