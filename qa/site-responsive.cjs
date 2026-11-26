@@ -81,6 +81,39 @@ const server = http.createServer((req, res) => {
     return { context, page, response, pageErrors, intakeCalls: () => intakeCalls };
   }
 
+  async function prepareVisualReview(page, label) {
+    const languageDismiss = page.locator('#language-suggestion .language-dismiss');
+    if (await languageDismiss.isVisible().catch(() => false)) {
+      await languageDismiss.click();
+    }
+    check(label + ' language suggestion dismissed', !(await page.locator('#language-suggestion').isVisible().catch(() => false)));
+
+    const consentPanel = page.locator('.sc-analytics-panel');
+    const rejectAnalytics = page.locator('.sc-analytics-panel .sc-analytics-reject');
+    if (await rejectAnalytics.isVisible().catch(() => false)) {
+      await rejectAnalytics.click();
+    }
+    check(label + ' analytics consent panel dismissed without opt-in',
+      !(await consentPanel.isVisible().catch(() => false)));
+
+    await page.keyboard.press('Tab');
+    const focusState = await page.evaluate(() => {
+      const active = document.activeElement;
+      const style = getComputedStyle(active);
+      return {
+        tag: active && active.tagName,
+        focusVisible: !!active && active.matches(':focus-visible'),
+        outlineStyle: style.outlineStyle,
+        outlineWidth: style.outlineWidth,
+        outlineColor: style.outlineColor
+      };
+    });
+    check(label + ' keyboard focus has visible indicator',
+      focusState.focusVisible && focusState.outlineStyle !== 'none' && parseFloat(focusState.outlineWidth) > 0,
+      JSON.stringify(focusState));
+    await page.evaluate(() => document.activeElement && document.activeElement.blur());
+  }
+
   const locales = [
     { route: '/', lang: 'es', name: 'Spanish home' },
     { route: '/en/', lang: 'en', name: 'English home' },
@@ -113,6 +146,7 @@ const server = http.createServer((req, res) => {
         missingAnchors.join(', '));
       check(locale.name + ' no uncaught JS errors @ ' + width, fixture.pageErrors.length === 0,
         fixture.pageErrors.join(' | '));
+      await prepareVisualReview(page, locale.name + ' @ ' + width);
       if (width === 390 || width === 1440) {
         await page.screenshot({
           path: path.join(out, locale.lang + '-' + width + '.png'),
