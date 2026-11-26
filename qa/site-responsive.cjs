@@ -82,6 +82,25 @@ const server = http.createServer((req, res) => {
   }
 
   async function prepareVisualReview(page, label) {
+    // Start keyboard testing before dismissing overlays so Tab reaches the skip link.
+    await page.keyboard.press('Tab');
+    const focusState = await page.evaluate(() => {
+      const active = document.activeElement;
+      const style = getComputedStyle(active);
+      return {
+        tag: active && active.tagName,
+        className: active && active.className,
+        focusVisible: !!active && active.matches(':focus-visible'),
+        outlineStyle: style.outlineStyle,
+        outlineWidth: style.outlineWidth,
+        outlineColor: style.outlineColor
+      };
+    });
+    check(label + ' keyboard focus has visible indicator',
+      focusState.focusVisible && focusState.outlineStyle !== 'none' && parseFloat(focusState.outlineWidth) > 0,
+      JSON.stringify(focusState));
+    await page.evaluate(() => document.activeElement && document.activeElement.blur());
+
     const languageDismiss = page.locator('#language-suggestion .language-dismiss');
     if (await languageDismiss.isVisible().catch(() => false)) {
       await languageDismiss.click();
@@ -95,23 +114,6 @@ const server = http.createServer((req, res) => {
     }
     check(label + ' analytics consent panel dismissed without opt-in',
       !(await consentPanel.isVisible().catch(() => false)));
-
-    await page.keyboard.press('Tab');
-    const focusState = await page.evaluate(() => {
-      const active = document.activeElement;
-      const style = getComputedStyle(active);
-      return {
-        tag: active && active.tagName,
-        focusVisible: !!active && active.matches(':focus-visible'),
-        outlineStyle: style.outlineStyle,
-        outlineWidth: style.outlineWidth,
-        outlineColor: style.outlineColor
-      };
-    });
-    check(label + ' keyboard focus has visible indicator',
-      focusState.focusVisible && focusState.outlineStyle !== 'none' && parseFloat(focusState.outlineWidth) > 0,
-      JSON.stringify(focusState));
-    await page.evaluate(() => document.activeElement && document.activeElement.blur());
   }
 
   const locales = [
