@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
+const { spawnSync } = require('node:child_process');
 
 const root = process.cwd();
 const out = path.join(root, 'qa-output');
@@ -27,6 +28,16 @@ const check = (name, condition, details = '') => {
   results.push({ name, passed: true, details });
   console.log('PASS ' + name);
 };
+
+const phpStagingProbe = spawnSync('php', ['-r', '$_SERVER["HTTP_HOST"]="preview.example"; $_SERVER["REQUEST_METHOD"]="POST"; include "api/intake.php";'], { cwd: root, encoding: 'utf8' });
+check('PHP intake blocks staging host before any upstream relay',
+  phpStagingProbe.status === 0 && phpStagingProbe.stdout.includes('"code":"not_configured"'),
+  (phpStagingProbe.stdout || '') + (phpStagingProbe.stderr || ''));
+
+const phpProductionProbe = spawnSync('php', ['-r', '$_SERVER["HTTP_HOST"]="sinecdo.com"; $_SERVER["REQUEST_METHOD"]="POST"; $_SERVER["CONTENT_TYPE"]="application/json"; include "api/intake.php";'], { cwd: root, encoding: 'utf8' });
+check('PHP intake allows production host through to payload validation',
+  phpProductionProbe.status === 0 && phpProductionProbe.stdout.includes('"code":"invalid"'),
+  (phpProductionProbe.stdout || '') + (phpProductionProbe.stderr || ''));
 
 const server = http.createServer((req, res) => {
   let pathname;
@@ -56,8 +67,10 @@ const server = http.createServer((req, res) => {
       reducedMotion: reducedMotion ? 'reduce' : 'no-preference'
     });
     let intakeCalls = 0;
+    let analyticsCalls = 0;
     await context.route('**/*', async requestRoute => {
       const requestUrl = new URL(requestRoute.request().url());
+      if (['www.googletagmanager.com', 'www.google-analytics.com', 'region1.google-analytics.com', 'script.google.com'].includes(requestUrl.hostname)) analyticsCalls++;
       if (requestUrl.origin !== origin) return requestRoute.abort();
       if (requestUrl.pathname === '/api/intake.php') {
         intakeCalls++;
@@ -78,7 +91,7 @@ const server = http.createServer((req, res) => {
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
     const response = await page.goto(origin + route, { waitUntil: 'networkidle' });
-    return { context, page, response, pageErrors, intakeCalls: () => intakeCalls };
+    return { context, page, response, pageErrors, intakeCalls: () => intakeCalls, analyticsCalls: () => analyticsCalls };
   }
 
   async function prepareVisualReview(page, label) {
@@ -148,7 +161,31 @@ const server = http.createServer((req, res) => {
         missingAnchors.join(', '));
       check(locale.name + ' no uncaught JS errors @ ' + width, fixture.pageErrors.length === 0,
         fixture.pageErrors.join(' | '));
+      check(locale.name + ' staging banner visible @ ' + width,
+        await page.locator('.sinecdo-staging-banner').isVisible());
+      const robots = await page.locator('meta[name="robots"]').getAttribute('content') || '';
+      check(locale.name + ' staging is noindex @ ' + width, /noindex/i.test(robots), robots);
+      check(locale.name + ' production analytics disabled @ ' + width,
+        fixture.analyticsCalls() === 0 && await page.locator('.sc-analytics-panel, .sc-analytics-settings').count() === 0);
       await prepareVisualReview(page, locale.name + ' @ ' + width);
+      if (locale.lang === 'es' && width === 390) {
+        await page.locator('#lead-form').evaluate(form => {
+          for (const control of form.elements) {
+            if (!control.required) continue;
+            if (control.type === 'checkbox') control.checked = true;
+            else if (control.tagName === 'SELECT') control.value = Array.from(control.options).find(option => option.value)?.value || '';
+            else control.value = control.type === 'email' ? 'qa@example.invalid' : control.type === 'url' ? 'https://example.invalid' : 'QA interna';
+            control.dispatchEvent(new Event('input', { bubbles: true }));
+            control.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+        await page.locator('#lead-form button[type="submit"]').click();
+        await page.locator('#lead-form-status').waitFor({ state: 'visible' });
+        const previewMessage = await page.locator('#lead-form-status').innerText();
+        check('Staging B2B form displays disabled preview state',
+          /entorno|prueba/i.test(previewMessage) && fixture.intakeCalls() === 0,
+          previewMessage);
+      }
       if (width === 390 || width === 1440) {
         await page.screenshot({
           path: path.join(out, locale.lang + '-' + width + '.png'),
@@ -175,6 +212,15 @@ const server = http.createServer((req, res) => {
       JSON.stringify(dimensions));
     check('Quiz no uncaught JS errors @ ' + width, fixture.pageErrors.length === 0,
       fixture.pageErrors.join(' | '));
+    check('Quiz staging banner visible @ ' + width,
+      await fixture.page.locator('.sinecdo-staging-banner').isVisible());
+    check('Quiz production analytics disabled @ ' + width,
+      fixture.analyticsCalls() === 0 && await fixture.page.locator('.sc-analytics-panel, .sc-analytics-settings').count() === 0);
+    const captureBlocked = await fixture.page.evaluate(async () => {
+      try { await window.SinecdoCapture.submit({ type: 'quiz' }); return 'unexpected'; }
+      catch (error) { return error.message; }
+    });
+    check('Quiz registration is blocked on staging', captureBlocked === 'not_configured' && fixture.intakeCalls() === 0, captureBlocked);
     if (width === 390 || width === 1440) {
       await fixture.page.screenshot({
         path: path.join(out, 'quiz-' + width + '.png'),
