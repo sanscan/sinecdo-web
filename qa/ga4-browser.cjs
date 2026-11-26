@@ -24,6 +24,7 @@ const server = http.createServer((req,res) => {
   const browser=await chromium.launch({headless:true});
   async function fixture(url='/', width=390) {
     const ctx=await browser.newContext({viewport:{width,height:900}});
+    await ctx.addInitScript(() => { window.__SINECDO_QA__ = true; });
     let tagRequests=0, intakeRequests=0, failIntake=false;
     await ctx.route('**/*', async route => {
       const req=route.request(), u=new URL(req.url());
