@@ -1,10 +1,11 @@
 @import url('/assets/design-system/tokens.css?v=20261127-1');
+@import url('/assets/design-system/components.css?v=20261127-1');
 
 /*
  * Quiz compatibility bridge; load AFTER quest.css and BEFORE capture.css.
- * Existing Quiz semantics differ from the master in a few places.
- * In particular --ink is its PAGE BACKGROUND, not text-on-aqua.
- * Preserve these differences until the Quiz UI migration is approved.
+ * Static Quiz geometry and type remain unchanged. Phase 1.2 adds native
+ * hover/focus/selected/disabled states via components.css.
+ * In particular --ink remains PAGE BACKGROUND, not text-on-aqua.
  */
 :root {
   --ink: var(--sc-bg-primary);
