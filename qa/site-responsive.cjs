@@ -232,6 +232,14 @@ const server = http.createServer((req, res) => {
     await fixture.context.close();
   }
 
+  const archivedForm = await openPage('/qa/site/', 390);
+  await archivedForm.page.locator('#lead-form').evaluate(form => form.requestSubmit());
+  const archivedStatus = archivedForm.page.locator('#lead-form-status');
+  check('Archived form cannot submit outside production',
+    await archivedStatus.isVisible() && /desactivados/.test(await archivedStatus.textContent()) &&
+    archivedForm.analyticsCalls() === 0 && archivedForm.intakeCalls() === 0);
+  await archivedForm.context.close();
+
   // Privacy routes are static and must remain available in each locale.
   for (const route of ['/privacy/es/', '/privacy/en/', '/privacy/it/']) {
     const fixture = await openPage(route, 390);
