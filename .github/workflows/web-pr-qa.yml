@@ -84,6 +84,10 @@ jobs:
       - name: Foundation tokens and unchanged legacy rendering
         run: node qa/design-system-foundations.cjs
 
+      - name: Component states, keyboard, touch and reduced motion
+        if: ${{ !cancelled() }}
+        run: node qa/design-system-components.cjs
+
       - name: Preserve browser evidence
         if: always()
         uses: actions/upload-artifact@v4
