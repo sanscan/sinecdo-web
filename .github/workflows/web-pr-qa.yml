@@ -28,6 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -45,7 +46,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -d '' files < <(find . -type f -name '*.js' -not -path './node_modules/*' -not -path './.git/*' -print0)
+          mapfile -d '' files < <(find . -type f \( -name '*.js' -o -name '*.cjs' \) -not -path './node_modules/*' -not -path './.git/*' -print0)
           if [ "${#files[@]}" -eq 0 ]; then
             echo "No JavaScript files found."
           else
@@ -79,6 +80,9 @@ jobs:
 
       - name: Full-site responsive QA (390 / 720 / 980 / 1440)
         run: node qa/site-responsive.cjs
+
+      - name: Foundation tokens and unchanged legacy rendering
+        run: node qa/design-system-foundations.cjs
 
       - name: Preserve browser evidence
         if: always()
