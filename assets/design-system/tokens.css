@@ -1,0 +1,194 @@
+/*
+ * Sinecdo Foundations v1.0.0 — 2026-11-27
+ * Source: Figma 60zlnPJ1kmX4meinJ9GPNB / Foundations 2:104.
+ * Read-only extraction of the master's variables, text and effect styles.
+ * This file declares tokens only. It does not restyle elements or enable motion.
+ * Namespacing prevents collisions: the legacy Quiz uses --ink as its background.
+ * Percent tracking/leading and second-based Figma timings are converted to CSS units.
+ */
+:root {
+  --sc-foundations-version: "1.0.0";
+
+  /* Primitive colors */
+  --sc-graphite-950: #121514;
+  --sc-graphite-900: #171b1a;
+  --sc-graphite-850: #1c211f;
+  --sc-graphite-800: #222826;
+  --sc-stone: #f2f0e9;
+  --sc-copy: #e4e6e2;
+  --sc-stone-muted: #b8bbb4;
+  --sc-stone-dim: #858b86;
+  --sc-aqua: #63e6d2;
+  --sc-aqua-ink: #10201c;
+  --sc-terracotta: #d97b5f;
+  --sc-white: #ffffff;
+  --sc-black: #000000;
+
+  /* Semantic colors */
+  --sc-bg-primary: var(--sc-graphite-950);
+  --sc-bg-surface: var(--sc-graphite-900);
+  --sc-bg-raised: var(--sc-graphite-850);
+  --sc-bg-card: var(--sc-graphite-800);
+  --sc-text-primary: var(--sc-stone);
+  --sc-text-body: var(--sc-copy);
+  --sc-text-secondary: var(--sc-stone-muted);
+  --sc-text-tertiary: var(--sc-stone-dim);
+  --sc-text-on-aqua: var(--sc-aqua-ink);
+  --sc-brand-primary: var(--sc-aqua);
+  --sc-brand-warm: var(--sc-terracotta);
+  --sc-border-default: rgba(242, 240, 233, .13);
+  --sc-border-strong: rgba(242, 240, 233, .23);
+  --sc-surface-aqua-soft: rgba(99, 230, 210, .12);
+  --sc-border-aqua: rgba(99, 230, 210, .34);
+  --sc-surface-terracotta-soft: rgba(217, 123, 95, .08);
+  --sc-border-terracotta: rgba(217, 123, 95, .35);
+  /* Raw Figma values, not default card backgrounds or shadow definitions. */
+  --sc-source-card-surface: var(--sc-white);
+  --sc-source-aqua-glow: var(--sc-aqua);
+
+  /* Spacing */
+  --sc-space-4: 4px;
+  --sc-space-8: 8px;
+  --sc-space-12: 12px;
+  --sc-space-16: 16px;
+  --sc-space-20: 20px;
+  --sc-space-24: 24px;
+  --sc-space-28: 28px;
+  --sc-space-32: 32px;
+  --sc-space-40: 40px;
+  --sc-space-48: 48px;
+  --sc-space-56: 56px;
+  --sc-space-64: 64px;
+  --sc-space-72: 72px;
+  --sc-space-80: 80px;
+  --sc-space-96: 96px;
+  --sc-space-112: 112px;
+  --sc-space-128: 128px;
+
+  /* Shape */
+  --sc-radius-sm: 10px;
+  --sc-radius-field: 13px;
+  --sc-radius-card: 22px;
+  --sc-radius-panel: 28px;
+  --sc-radius-hero: 30px;
+  --sc-radius-pill: 999px;
+
+  /* Type families retain the existing web fallbacks. No new font request. */
+  --sc-font-editorial: "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sc-font-wordmark: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sc-font-technical: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --sc-weight-body: 300;
+  --sc-weight-ui: 400;
+  --sc-weight-technical: 500;
+  --sc-weight-option: 600;
+  --sc-weight-label: 650;
+  --sc-weight-button: 690;
+  --sc-weight-strong: 700;
+  --sc-weight-wordmark: 760;
+  --sc-weight-display: 780;
+  --sc-tracking-h1: -.055em;
+  --sc-tracking-h2: -.025em;
+  --sc-tracking-h3: -.035em;
+  --sc-tracking-quote: -.02em;
+  --sc-tracking-eyebrow: .12em;
+  --sc-tracking-technical: .08em;
+  --sc-tracking-wordmark: 0em;
+  --sc-leading-display: .98;
+  --sc-leading-heading: 1.2;
+  --sc-leading-lead: 1.5;
+  --sc-leading-body: 1.55;
+  --sc-leading-technical: 1.6;
+  --sc-leading-button: 1;
+  --sc-leading-quote: 1;
+  --sc-leading-quiz-title: 1.08;
+  --sc-leading-quiz-option: 1.28;
+  /* Figma specimen sizes, not global fluid-web overrides. */
+  --sc-size-wordmark: 34px;
+  --sc-size-h1: 88px;
+  --sc-size-h2: 64px;
+  --sc-size-h3: 27px;
+  --sc-size-quote: 68px;
+  --sc-size-lead: 22px;
+  --sc-size-body: 16px;
+  --sc-size-ui: 14px;
+  --sc-size-label: 13px;
+  --sc-size-eyebrow: 12px;
+  --sc-size-technical: 10px;
+  --sc-size-quiz-title: 48px;
+  --sc-size-quiz-option: 17px;
+
+  /* Layout */
+  --sc-container-web: 1180px;
+  --sc-container-quiz: 1320px;
+  --sc-page-gutter: 20px;
+  --sc-header-desktop: 72px;
+  --sc-header-mobile: 64px;
+  --sc-section-desktop: 112px;
+  --sc-section-mobile: 82px;
+  --sc-field-height: 50px;
+  --sc-button-height: 46px;
+
+  /* Motion vocabulary only; animations belong to the subsequent UI slice. */
+  --sc-motion-instant: 100ms;
+  --sc-motion-fast: 140ms;
+  --sc-motion-standard: 220ms;
+  --sc-motion-slow: 420ms;
+  --sc-motion-ambient: 1800ms;
+  --sc-motion-shine: 620ms;
+  --sc-ease-standard: cubic-bezier(.2, .8, .2, 1);
+  --sc-ease-enter: cubic-bezier(.16, 1, .3, 1);
+  --sc-ease-exit: cubic-bezier(.4, 0, 1, 1);
+  --sc-ease-linear: linear;
+  --sc-hover-lift: 2px;
+  --sc-shine-opacity: .26;
+  --sc-pulse-opacity: .22;
+  --sc-reduced-motion: 0;
+  --sc-cursor-default: default;
+  --sc-cursor-link: pointer;
+  --sc-cursor-interactive: pointer;
+  --sc-cursor-text: text;
+  --sc-cursor-drag: grab;
+  --sc-cursor-dragging: grabbing;
+  --sc-cursor-disabled: not-allowed;
+
+  /* Iconography; unitless stroke values can also be used by SVG. */
+  --sc-icon-xs: 16px;
+  --sc-icon-sm: 20px;
+  --sc-icon-md: 24px;
+  --sc-icon-lg: 32px;
+  --sc-icon-xl: 48px;
+  --sc-icon-stroke-light: 1.5;
+  --sc-icon-stroke-standard: 1.75;
+  --sc-icon-stroke-strong: 2;
+  --sc-icon-clear-space: 4px;
+
+  /* Effect styles from the master */
+  --sc-effect-focus: 0 0 0 3px rgba(99, 230, 210, .38);
+  --sc-effect-elevation: 0 10px 26px 0 rgba(0, 0, 0, .24);
+  --sc-effect-signal-soft: 0 0 18px 0 rgba(99, 230, 210, .13);
+  --sc-effect-signal-active: 0 0 28px 0 rgba(99, 230, 210, .22);
+  --sc-effect-floating: 0 18px 42px 0 rgba(0, 0, 0, .30);
+
+  /* Compatibility values observed in e8eeb59. NOT canonical Figma overrides.
+   * Keep current pages visually unchanged until their explicit redesign slice.
+   */
+  --sc-legacy-home-h1-tracking: -.045em;
+  --sc-legacy-quiz-surface: #1b201e;
+  --sc-legacy-quiz-muted: #adb4ae;
+  --sc-legacy-quiz-border: rgba(242, 240, 233, .16);
+  --sc-legacy-quiz-warm: #e8ad97;
+  --sc-legacy-quiz-font: 'DM Sans', system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sc-reduced-motion: 1;
+    --sc-motion-instant: 0ms;
+    --sc-motion-fast: 0ms;
+    --sc-motion-standard: 0ms;
+    --sc-motion-slow: 0ms;
+    --sc-motion-ambient: 0ms;
+    --sc-motion-shine: 0ms;
+    --sc-hover-lift: 0px;
+  }
+}
