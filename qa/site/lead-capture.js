@@ -6,6 +6,19 @@
   if (!form) return;
 
   const status = document.querySelector('#lead-form-status');
+
+  if (!['sinecdo.com', 'www.sinecdo.com'].includes(window.location.hostname.toLowerCase())) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!status) return;
+      status.textContent = 'Los envíos están desactivados en este entorno de prueba.';
+      status.className = 'form-status error';
+      status.hidden = false;
+      status.focus();
+    });
+    return;
+  }
+
   const submit = form.querySelector('button[type="submit"]');
   const submitLabel = submit.querySelector('[data-submit-label]');
   const params = new URLSearchParams(window.location.search);
