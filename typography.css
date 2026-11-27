@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..900;1,300..900&display=swap');
 @import url('/assets/design-system/tokens.css?v=20261127-1');
+@import url('/assets/design-system/components.css?v=20261127-1');
 
 /* Compatibility bridge: preserve the current website while sourcing its
    foundations from the master. styles.css retains fallback declarations. */
