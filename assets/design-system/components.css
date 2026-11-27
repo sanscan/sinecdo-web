@@ -71,9 +71,11 @@ html body :is(a.card[href], button.card, a.sc-card[href], button.sc-card, .q-car
   transition: transform var(--sc-motion-standard) var(--sc-ease-standard), box-shadow var(--sc-motion-standard) var(--sc-ease-standard), border-color var(--sc-motion-standard) var(--sc-ease-standard), background-color var(--sc-motion-standard) var(--sc-ease-standard);
 }
 
-/* Keyboard focus is solid as well as translucent: never rely on glow alone. */
+/* Keyboard focus is solid as well as translucent: never rely on glow alone.
+   On an aqua panel the outline uses ink, so it remains distinguishable. */
+.diagnostic-main { --sc-focus-color: var(--sc-text-on-aqua); }
 html body :is(.button, .q-primary, .q-secondary, .sc-button, .sc-link, .nav-links a[href], a.card[href], button.card, a.sc-card[href], button.sc-card):focus-visible {
-  outline: 2px solid var(--sc-aqua);
+  outline: 2px solid var(--sc-focus-color, var(--sc-aqua));
   outline-offset: 3px;
   box-shadow: var(--sc-effect-focus);
 }
@@ -122,7 +124,7 @@ html body :is(.form-field, .q-field, .sc-field) :is(input:not([type="checkbox"])
   box-shadow: var(--sc-effect-focus);
 }
 html body :is(.form-field, .q-field, .sc-field) :is(input, select, textarea):focus-visible {
-  outline: 2px solid var(--sc-aqua);
+  outline: 2px solid var(--sc-focus-color, var(--sc-aqua));
   outline-offset: 2px;
 }
 html body :is(.form-field, .q-field, .sc-field) :is(input, select, textarea)[aria-invalid="true"]:not(:disabled) { border-color: var(--sc-terracotta); }
@@ -137,7 +139,7 @@ html body :is(.form-field, .q-field, .sc-field) :is(input, select, textarea):dis
   cursor: var(--sc-cursor-disabled);
 }
 html body :is(.form-consent, .sc-field) :is(input[type="checkbox"], input[type="radio"]):focus-visible {
-  outline: 2px solid var(--sc-aqua);
+  outline: 2px solid var(--sc-focus-color, var(--sc-aqua));
   outline-offset: 3px;
 }
 html body .q-card:has(input:checked) {
@@ -152,8 +154,9 @@ html body .q-card:has(input:focus-visible) {
 html body .q-card:has(input:disabled) { opacity: .6; cursor: var(--sc-cursor-disabled); }
 
 /* Native disabled buttons block events; aria-disabled anchors require the
-   consumer to remove href or suppress activation. CSS cannot disable a link. */
-html body :is(.button, .q-primary, .q-secondary, .sc-button):is(:disabled, [aria-disabled="true"]) {
+   consumer to remove href or suppress activation. CSS cannot disable a link.
+   Include form-actions specificity to override the legacy disabled=wait rule. */
+html body :is(.form-actions .button, .button, .q-primary, .q-secondary, .sc-button):is(:disabled, [aria-disabled="true"]) {
   background: var(--sc-bg-card);
   border-color: var(--sc-border-default);
   color: var(--sc-text-tertiary);
@@ -162,7 +165,7 @@ html body :is(.button, .q-primary, .q-secondary, .sc-button):is(:disabled, [aria
   transform: none;
   box-shadow: none;
 }
-html body :is(.button, .q-primary, .q-secondary, .sc-button)[aria-busy="true"] { cursor: wait; transform: none; }
+html body :is(.form-actions .button, .button, .q-primary, .q-secondary, .sc-button)[aria-busy="true"] { cursor: wait; transform: none; }
 html body :is(.nav-links a, .sc-link)[aria-disabled="true"] { color: var(--sc-text-tertiary); cursor: var(--sc-cursor-disabled); text-decoration: none; }
 
 @media (hover: none), (pointer: coarse) {
