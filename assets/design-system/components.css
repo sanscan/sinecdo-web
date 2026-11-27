@@ -1,0 +1,180 @@
+/*
+ * Sinecdo UI states v1.0.0 — 2026-11-27 / Phase 1.2
+ * Figma master: 60zlnPJ1kmX4meinJ9GPNB, Button 23:260,
+ * Input 23:264, Nav 25:176. Uses tokens.css; no font or image requests.
+ * Existing markup, copy, static geometry and backend contracts stay intact.
+ * New pages can opt into .sc-* primitives. No decorative cursor or shimmer yet.
+ */
+:root { --sc-components-version: "1.0.0"; }
+
+/* Reusable primitives for subsequent pages; no reset of legacy geometry. */
+.sc-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: var(--sc-button-height);
+  max-width: 100%;
+  padding: 12px var(--sc-space-20);
+  border: 1px solid var(--sc-aqua);
+  border-radius: var(--sc-radius-pill);
+  background: var(--sc-aqua);
+  color: var(--sc-text-on-aqua);
+  font: var(--sc-weight-button) var(--sc-size-ui)/1.2 var(--sc-font-editorial);
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.sc-button--secondary {
+  background: var(--sc-bg-surface);
+  border-color: var(--sc-border-strong);
+  color: var(--sc-text-primary);
+}
+.sc-field { display: grid; gap: var(--sc-space-8); min-width: 0; }
+.sc-field > label { color: var(--sc-text-primary); font: var(--sc-weight-label) var(--sc-size-label)/1.5 var(--sc-font-editorial); }
+.sc-field > :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--sc-field-height);
+  padding: 12px 14px;
+  border: 1px solid var(--sc-border-strong);
+  border-radius: var(--sc-radius-field);
+  background: var(--sc-bg-primary);
+  color: var(--sc-text-primary);
+  font: var(--sc-weight-ui) var(--sc-size-ui)/var(--sc-leading-body) var(--sc-font-editorial);
+}
+.sc-field > textarea { min-height: 142px; resize: vertical; }
+.sc-field :is(input, textarea)::placeholder { color: var(--sc-text-secondary); }
+.sc-field-help { margin: 0; color: var(--sc-text-secondary); font: var(--sc-weight-ui) var(--sc-size-label)/1.5 var(--sc-font-editorial); }
+.sc-field-error { margin: 0; color: var(--sc-terracotta); font: var(--sc-weight-ui) var(--sc-size-ui)/var(--sc-leading-body) var(--sc-font-editorial); }
+.sc-card {
+  display: block;
+  padding: var(--sc-space-24);
+  border: 1px solid var(--sc-border-default);
+  border-radius: var(--sc-radius-card);
+  background: var(--sc-bg-surface);
+  color: var(--sc-text-primary);
+  text-decoration: none;
+}
+.sc-link { color: var(--sc-aqua); text-underline-offset: .25em; }
+
+/* Native semantics: informational cards and selectable prose retain their cursor. */
+:where(a[href], button, summary, select, input[type="checkbox"], input[type="radio"]) { cursor: var(--sc-cursor-interactive); }
+:where(input:not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]) { cursor: var(--sc-cursor-text); }
+html body :is(.button, .q-primary, .q-secondary, .sc-button) {
+  cursor: var(--sc-cursor-interactive);
+  touch-action: manipulation;
+  transition: transform var(--sc-motion-standard) var(--sc-ease-standard), box-shadow var(--sc-motion-standard) var(--sc-ease-standard), background-color var(--sc-motion-standard) var(--sc-ease-standard), border-color var(--sc-motion-standard) var(--sc-ease-standard);
+}
+html body :is(a.card[href], button.card, a.sc-card[href], button.sc-card, .q-card) {
+  transition: transform var(--sc-motion-standard) var(--sc-ease-standard), box-shadow var(--sc-motion-standard) var(--sc-ease-standard), border-color var(--sc-motion-standard) var(--sc-ease-standard), background-color var(--sc-motion-standard) var(--sc-ease-standard);
+}
+
+/* Keyboard focus is solid as well as translucent: never rely on glow alone. */
+html body :is(.button, .q-primary, .q-secondary, .sc-button, .sc-link, .nav-links a[href], a.card[href], button.card, a.sc-card[href], button.sc-card):focus-visible {
+  outline: 2px solid var(--sc-aqua);
+  outline-offset: 3px;
+  box-shadow: var(--sc-effect-focus);
+}
+html body .nav-links a[href]:not(.button):focus-visible,
+html body .sc-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--sc-aqua);
+  text-decoration-thickness: 1px;
+  text-underline-offset: .35em;
+}
+
+/* Hover is an enhancement for a mouse, not a prerequisite for touch. */
+@media (hover: hover) and (pointer: fine) {
+  html body :is(.button, .q-primary, .q-secondary, .sc-button):not(:disabled):not([aria-disabled="true"]):not([aria-busy="true"]):hover {
+    transform: translateY(calc(-1 * var(--sc-hover-lift)));
+    box-shadow: var(--sc-effect-signal-soft);
+  }
+  html body :is(.button.secondary, .q-secondary, .sc-button--secondary):not(:disabled):not([aria-disabled="true"]):hover {
+    background-color: var(--sc-bg-raised);
+    border-color: var(--sc-border-aqua);
+  }
+  html body .nav-links a[href]:not(.button):not([aria-disabled="true"]):hover,
+  html body .sc-link:not([aria-disabled="true"]):hover {
+    color: var(--sc-text-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--sc-aqua);
+    text-decoration-thickness: 1px;
+    text-underline-offset: .35em;
+  }
+  html body :is(a.card[href], button.card, a.sc-card[href], button.sc-card):not(:disabled):not([aria-disabled="true"]):hover {
+    transform: translateY(calc(-1 * var(--sc-hover-lift)));
+    border-color: var(--sc-border-aqua);
+    background-color: var(--sc-bg-raised);
+    box-shadow: var(--sc-effect-elevation);
+  }
+  html body .q-card:not(:has(input:disabled)):hover { border-color: var(--sc-aqua); }
+}
+html body :is(.button, .q-primary, .q-secondary, .sc-button):not(:disabled):not([aria-disabled="true"]):not([aria-busy="true"]):active {
+  transform: translateY(0) scale(.99);
+  box-shadow: none;
+}
+
+/* Input state layer. Error styling appears after interaction, not on first load. */
+html body :is(.form-field, .q-field, .sc-field) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea):focus {
+  border-color: var(--sc-aqua);
+  box-shadow: var(--sc-effect-focus);
+}
+html body :is(.form-field, .q-field, .sc-field) :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--sc-aqua);
+  outline-offset: 2px;
+}
+html body :is(.form-field, .q-field, .sc-field) :is(input, select, textarea)[aria-invalid="true"]:not(:disabled) { border-color: var(--sc-terracotta); }
+@supports selector(:user-invalid) {
+  html body :is(.form-field, .q-field, .sc-field) :is(input, select, textarea):user-invalid:not(:disabled) { border-color: var(--sc-terracotta); }
+}
+html body :is(.form-field, .q-field, .sc-field) :is(input, select, textarea):disabled {
+  background: var(--sc-bg-card);
+  color: var(--sc-text-tertiary);
+  border-color: var(--sc-border-default);
+  box-shadow: none;
+  cursor: var(--sc-cursor-disabled);
+}
+html body :is(.form-consent, .sc-field) :is(input[type="checkbox"], input[type="radio"]):focus-visible {
+  outline: 2px solid var(--sc-aqua);
+  outline-offset: 3px;
+}
+html body .q-card:has(input:checked) {
+  border-color: var(--sc-aqua);
+  background: var(--sc-surface-aqua-soft);
+}
+html body .q-card:has(input:focus-visible) {
+  outline: 2px solid var(--sc-aqua);
+  outline-offset: 3px;
+  box-shadow: var(--sc-effect-focus);
+}
+html body .q-card:has(input:disabled) { opacity: .6; cursor: var(--sc-cursor-disabled); }
+
+/* Native disabled buttons block events; aria-disabled anchors require the
+   consumer to remove href or suppress activation. CSS cannot disable a link. */
+html body :is(.button, .q-primary, .q-secondary, .sc-button):is(:disabled, [aria-disabled="true"]) {
+  background: var(--sc-bg-card);
+  border-color: var(--sc-border-default);
+  color: var(--sc-text-tertiary);
+  opacity: 1;
+  cursor: var(--sc-cursor-disabled);
+  transform: none;
+  box-shadow: none;
+}
+html body :is(.button, .q-primary, .q-secondary, .sc-button)[aria-busy="true"] { cursor: wait; transform: none; }
+html body :is(.nav-links a, .sc-link)[aria-disabled="true"] { color: var(--sc-text-tertiary); cursor: var(--sc-cursor-disabled); text-decoration: none; }
+
+@media (hover: none), (pointer: coarse) {
+  html body :is(.button, .q-primary, .q-secondary, .sc-button):hover { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body :is(.button, .q-primary, .q-secondary, .sc-button, .q-card, a.card[href], button.card, a.sc-card[href], button.sc-card) {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+@media (forced-colors: active) {
+  html body :is(.button, .q-primary, .q-secondary, .sc-button, .sc-link, .nav-links a, .form-field input, .form-field textarea, .q-field input, .q-field select, .sc-field input, .sc-field select, .sc-field textarea):focus-visible { outline: 2px solid Highlight; box-shadow: none; }
+  html body :is(.button, .q-primary, .q-secondary, .sc-button):disabled { color: GrayText; border-color: GrayText; }
+}
