@@ -1,0 +1,98 @@
+name: Sinecdo Web — Pull Request QA
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - 'feat/**'
+      - 'feature/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sinecdo-web-qa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web-quality:
+    name: Web quality + responsive browser QA
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout proposed code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+
+      - name: Validate JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(find . -type f \( -name '*.js' -o -name '*.cjs' \) -not -path './node_modules/*' -not -path './.git/*' -print0)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No JavaScript files found."
+          else
+            for file in "${files[@]}"; do
+              echo "Checking $file"
+              node --check "$file"
+            done
+          fi
+
+      - name: Validate PHP syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(find . -type f -name '*.php' -not -path './vendor/*' -not -path './.git/*' -print0)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No PHP files found."
+          else
+            for file in "${files[@]}"; do
+              echo "Checking $file"
+              php -l "$file"
+            done
+          fi
+
+      - name: Install isolated Playwright dependency
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Existing lead + analytics regression (all external services mocked)
+        run: node qa/ga4-browser.cjs
+
+      - name: Full-site responsive QA (390 / 720 / 980 / 1440)
+        run: node qa/site-responsive.cjs
+
+      - name: Foundation tokens and unchanged legacy rendering
+        run: node qa/design-system-foundations.cjs
+
+      - name: Component states, keyboard, touch and reduced motion
+        if: ${{ !cancelled() }}
+        run: node qa/design-system-components.cjs
+
+      - name: Preserve browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinecdo-web-pr-qa-${{ github.run_id }}
+          path: qa-output/
+          if-no-files-found: ignore
+          retention-days: 14

@@ -2,6 +2,10 @@
 (() => {
 'use strict';
 const VERSION='2026-09-16.1';
+const PRODUCTION_HOSTS=new Set(['sinecdo.com','www.sinecdo.com']);
+const LOCAL_QA_HOSTS=new Set(['127.0.0.1','localhost']);
+const host=String(location.hostname||'').toLowerCase();
+const canUseLiveServices=PRODUCTION_HOSTS.has(host)||(LOCAL_QA_HOSTS.has(host)&&window.__SINECDO_QA__===true);
 const safe={get:k=>{try{return sessionStorage.getItem(k);}catch(_){return null;}},set:(k,v)=>{try{sessionStorage.setItem(k,v);}catch(_){}},del:k=>{try{sessionStorage.removeItem(k);}catch(_){}}};
 const uuid=()=>{if(crypto.randomUUID)return crypto.randomUUID();const b=crypto.getRandomValues(new Uint8Array(16));b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;const h=[...b].map(v=>v.toString(16).padStart(2,'0')).join('');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);};
 const labels={
@@ -23,6 +27,7 @@ function event(name,meta={}) {
  window.dispatchEvent(new CustomEvent('sinecdo:metric',{detail:value}));
 }
 async function submit(payload) {
+ if(!canUseLiveServices)throw new Error('not_configured');
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
  try {
   const r=await fetch('/api/intake.php',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(payload),signal:controller.signal});
@@ -58,6 +63,6 @@ function mount(host,ctx){
   finally{busy=false;if(!receipt)form.querySelectorAll('input,button').forEach(el=>el.disabled=false);}
  });
 }
-window.SinecdoCapture={VERSION,safe,uuid,labels,attribution,event,submit,mount,reset};
+window.SinecdoCapture={VERSION,safe,uuid,labels,attribution,event,submit,mount,reset,canUseLiveServices};
 attribution('landing');
 })();

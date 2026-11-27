@@ -2,6 +2,11 @@
    Does not change CRM registration, email permissions, or third-party marketing. */
 (() => {
   'use strict';
+  const productionHosts = new Set(['sinecdo.com', 'www.sinecdo.com']);
+  const localQaHosts = new Set(['127.0.0.1', 'localhost']);
+  const host = String(location.hostname || '').toLowerCase();
+  const localQa = localQaHosts.has(host) && window.__SINECDO_QA__ === true;
+  if (!productionHosts.has(host) && !localQa) return;
   const MEASUREMENT_ID = 'G-L9VZZXF0ZW';
   const KEY = 'sinecdo.ga4.consent.v1';
   const quizLang = location.pathname === '/quest/' ? new URLSearchParams(location.search).get('lang') : null;

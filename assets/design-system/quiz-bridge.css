@@ -1,0 +1,20 @@
+@import url('/assets/design-system/tokens.css?v=20261127-1');
+@import url('/assets/design-system/components.css?v=20261127-1');
+
+/*
+ * Quiz compatibility bridge; load AFTER quest.css and BEFORE capture.css.
+ * Static Quiz geometry and type remain unchanged. Phase 1.2 adds native
+ * hover/focus/selected/disabled states via components.css.
+ * In particular --ink remains PAGE BACKGROUND, not text-on-aqua.
+ */
+:root {
+  --ink: var(--sc-bg-primary);
+  --surface: var(--sc-legacy-quiz-surface);
+  --stone: var(--sc-text-primary);
+  --copy: var(--sc-text-body);
+  --muted: var(--sc-legacy-quiz-muted);
+  --line: var(--sc-legacy-quiz-border);
+  --aqua: var(--sc-aqua);
+  --warm: var(--sc-legacy-quiz-warm);
+  --font: var(--sc-legacy-quiz-font);
+}

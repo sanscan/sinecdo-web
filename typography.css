@@ -1,18 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..900;1,300..900&display=swap');
+@import url('/assets/design-system/tokens.css?v=20261127-1');
+@import url('/assets/design-system/components.css?v=20261127-1');
 
+/* Compatibility bridge: preserve the current website while sourcing its
+   foundations from the master. styles.css retains fallback declarations. */
 :root {
-  --editorial-font: "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --editorial-body-weight: 300;
-  --editorial-ui-weight: 400;
-  --editorial-bold-weight: 700;
-  --editorial-display-weight: 780;
-  --editorial-display-leading: .98;
-  --editorial-h1-tracking: -.045em;
-  --editorial-h2-tracking: -.025em;
-  --editorial-copy: #E4E6E2;
-  --aqua: #63E6D2;
-  --aqua-soft: rgba(99, 230, 210, .12);
-  --aqua-line: rgba(99, 230, 210, .34);
+  --graphite-950: var(--sc-graphite-950);
+  --graphite-900: var(--sc-graphite-900);
+  --graphite-850: var(--sc-graphite-850);
+  --graphite-800: var(--sc-graphite-800);
+  --stone: var(--sc-text-primary);
+  --stone-muted: var(--sc-text-secondary);
+  --stone-dim: var(--sc-text-tertiary);
+  --copy: var(--sc-text-body);
+  --aqua: var(--sc-aqua);
+  --aqua-soft: var(--sc-surface-aqua-soft);
+  --aqua-line: var(--sc-border-aqua);
+  --terracotta: var(--sc-terracotta);
+  --line: var(--sc-border-default);
+  --line-strong: var(--sc-border-strong);
+  --max: var(--sc-container-web);
+  --radius: var(--sc-radius-card);
+  --brand-word-weight: var(--sc-weight-wordmark);
+  --brand-word-tracking: var(--sc-tracking-wordmark);
+  --brand-word-leading: var(--sc-leading-display);
+  --editorial-font: var(--sc-font-editorial);
+  --editorial-body-weight: var(--sc-weight-body);
+  --editorial-ui-weight: var(--sc-weight-ui);
+  --editorial-bold-weight: var(--sc-weight-strong);
+  --editorial-display-weight: var(--sc-weight-display);
+  --editorial-display-leading: var(--sc-leading-display);
+  --editorial-h1-tracking: var(--sc-legacy-home-h1-tracking);
+  --editorial-h2-tracking: var(--sc-tracking-h2);
+  --editorial-copy: var(--sc-text-body);
 }
 
 /*
@@ -32,10 +52,10 @@ body {
 /* Keep the approved wordmark untouched in Inter. */
 .brand::after,
 .footer-brand::after {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-weight: 760;
+  font-family: var(--sc-font-wordmark);
+  font-weight: var(--sc-weight-wordmark);
   letter-spacing: 0;
-  line-height: .98;
+  line-height: var(--sc-leading-display);
 }
 
 /* Human/UI layer */
@@ -192,7 +212,7 @@ p em strong,
 .method-card .num,
 .next-step .tag,
 .form-status-kicker {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--sc-font-technical);
 }
 
 @media (max-width: 720px) {
