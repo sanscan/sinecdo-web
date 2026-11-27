@@ -1,0 +1,19 @@
+@import url('/assets/design-system/tokens.css?v=20261127-1');
+
+/*
+ * Quiz compatibility bridge; load AFTER quest.css and BEFORE capture.css.
+ * Existing Quiz semantics differ from the master in a few places.
+ * In particular --ink is its PAGE BACKGROUND, not text-on-aqua.
+ * Preserve these differences until the Quiz UI migration is approved.
+ */
+:root {
+  --ink: var(--sc-bg-primary);
+  --surface: var(--sc-legacy-quiz-surface);
+  --stone: var(--sc-text-primary);
+  --copy: var(--sc-text-body);
+  --muted: var(--sc-legacy-quiz-muted);
+  --line: var(--sc-legacy-quiz-border);
+  --aqua: var(--sc-aqua);
+  --warm: var(--sc-legacy-quiz-warm);
+  --font: var(--sc-legacy-quiz-font);
+}
